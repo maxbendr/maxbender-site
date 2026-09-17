@@ -1,0 +1,23 @@
+{
+  "intro": "I write about open innovation, what actually happens inside corporate startup programs, and what I learn building with AI. Most of it lives on LinkedIn.",
+  "posts": [
+    {
+      "title": "[PLACEHOLDER: post title]",
+      "summary": "Why most corporate innovation programs die in month four, and the one thing that keeps them alive.",
+      "url": "https://www.linkedin.com/posts/[PLACEHOLDER]",
+      "date": "2026-02-18"
+    },
+    {
+      "title": "[PLACEHOLDER: post title]",
+      "summary": "What I learned scouting startups in markets nobody puts on a slide.",
+      "url": "https://www.linkedin.com/posts/[PLACEHOLDER]",
+      "date": "2026-01-27"
+    },
+    {
+      "title": "[PLACEHOLDER: post title]",
+      "summary": "I shipped three AI side projects in a quarter. Here is what broke.",
+      "url": "https://www.linkedin.com/posts/[PLACEHOLDER]",
+      "date": "2025-12-09"
+    }
+  ]
+}

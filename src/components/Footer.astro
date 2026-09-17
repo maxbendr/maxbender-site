@@ -1,0 +1,27 @@
+---
+import { site } from "../lib/content";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="edge border-t">
+  <div class="mx-auto flex max-w-5xl flex-col gap-4 px-6 py-10 text-sm text-ink-soft sm:flex-row sm:items-center sm:justify-between dark:text-chalk-soft">
+    <p>
+      {site.name}, {year}. Built in a few late evenings.
+    </p>
+    <div class="flex flex-wrap gap-5">
+      <a class="link-underline" href={site.links.linkedin} rel="me noopener" target="_blank">
+        LinkedIn
+      </a>
+      <a class="link-underline" href={site.links.spotify} rel="noopener" target="_blank">
+        Spotify
+      </a>
+      <a class="link-underline" href="/now">
+        Now
+      </a>
+      <a class="link-underline" href="/#contact">
+        Contact
+      </a>
+    </div>
+  </div>
+</footer>

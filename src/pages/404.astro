@@ -1,0 +1,20 @@
+---
+import Base from "../layouts/Base.astro";
+import { sections, site } from "../lib/content";
+---
+
+<Base title={`Not found - ${site.name}`} navSections={[...sections]}>
+  <section class="mx-auto flex min-h-[60vh] max-w-2xl flex-col justify-center px-6">
+    <p class="font-mono text-xs uppercase tracking-[0.2em] accent">404</p>
+    <h1 class="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">
+      Nothing here. Probably my fault.
+    </h1>
+    <p class="mt-4 text-lg text-ink-soft dark:text-chalk-soft">
+      Try the{" "}
+      <a class="link-underline" href="/">
+        home page
+      </a>{" "}
+      or hit Ctrl and K.
+    </p>
+  </section>
+</Base>

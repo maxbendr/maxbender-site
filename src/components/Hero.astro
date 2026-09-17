@@ -1,0 +1,59 @@
+---
+import { obfuscateEmail, site } from "../lib/content";
+
+const email = obfuscateEmail(site.email);
+---
+
+<section class="mx-auto max-w-5xl px-6 pb-16 pt-16 sm:pb-24 sm:pt-28">
+  <div class="reveal is-visible">
+    <p class="font-mono text-xs uppercase tracking-[0.2em] accent">{site.name}</p>
+    <h1 class="mt-6 max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">
+      {site.positioning}
+    </h1>
+    <p class="mt-6 max-w-xl text-lg text-ink-soft sm:text-xl dark:text-chalk-soft">
+      {site.subline}
+    </p>
+
+    <div class="mt-10 flex flex-wrap items-center gap-3">
+      <a
+        href={site.links.linkedin}
+        target="_blank"
+        rel="me noopener"
+        class="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-transform duration-200 hover:-translate-y-0.5 dark:bg-accent-dark dark:text-night"
+      >
+        LinkedIn
+      </a>
+      <a
+        href={site.links.spotify}
+        target="_blank"
+        rel="noopener"
+        class="edge rounded-full border px-5 py-2.5 text-sm font-medium transition-colors duration-200 hover:border-accent hover:text-accent dark:hover:border-accent-dark dark:hover:text-accent-dark"
+      >
+        Spotify
+      </a>
+      <a
+        href="#contact"
+        data-email-link
+        data-user={email.user}
+        data-domain={email.domain}
+        class="edge rounded-full border px-5 py-2.5 text-sm font-medium transition-colors duration-200 hover:border-accent hover:text-accent dark:hover:border-accent-dark dark:hover:text-accent-dark"
+      >
+        Email
+      </a>
+    </div>
+
+    <p class="mt-8 font-mono text-xs text-ink-soft dark:text-chalk-soft">
+      Press <span class="accent">Ctrl</span> + <span class="accent">K</span> to jump around.
+    </p>
+  </div>
+</section>
+
+<script>
+  // The address is assembled in the browser so scrapers do not get a plain mailto.
+  document.querySelectorAll<HTMLAnchorElement>("[data-email-link]").forEach((link) => {
+    const user = link.dataset.user;
+    const domain = link.dataset.domain;
+    if (!user || !domain) return;
+    link.href = `mailto:${user}@${domain}`;
+  });
+</script>

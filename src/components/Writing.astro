@@ -1,0 +1,52 @@
+---
+import Section from "./Section.astro";
+import { site, writing } from "../lib/content";
+
+const dateFormat = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" });
+---
+
+<Section id="writing" label="Writing" title="Posts worth reading twice." intro={writing.intro}>
+  <ul>
+    {writing.posts.map((post, index) => (
+      <li class="reveal edge border-t" style={`transition-delay:${index * 50}ms`}>
+        <a
+          href={post.url}
+          target="_blank"
+          rel="noopener"
+          class="group grid gap-2 py-6 transition-colors sm:grid-cols-[9rem_1fr] sm:gap-8"
+        >
+          <span class="font-mono text-sm text-ink-soft dark:text-chalk-soft">
+            {dateFormat.format(new Date(post.date))}
+          </span>
+          <span>
+            <span class="block text-lg font-medium tracking-tight transition-colors group-hover:text-accent dark:group-hover:text-accent-dark">
+              {post.title}
+            </span>
+            <span class="mt-1 block text-sm text-ink-soft dark:text-chalk-soft">
+              {post.summary}
+            </span>
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <div class="reveal edge mt-12 flex flex-col items-start gap-5 rounded-2xl border p-8 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="text-xl font-semibold tracking-tight">
+        I post most of my thinking on LinkedIn.
+      </p>
+      <p class="mt-2 text-ink-soft dark:text-chalk-soft">
+        Open innovation, startup programs, and what I break while building with AI.
+      </p>
+    </div>
+    <a
+      href={site.links.linkedin}
+      target="_blank"
+      rel="me noopener"
+      class="shrink-0 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-transform duration-200 hover:-translate-y-0.5 dark:bg-accent-dark dark:text-night"
+    >
+      Follow me on LinkedIn
+    </a>
+  </div>
+</Section>

@@ -1,0 +1,26 @@
+{
+  "intro": "Short version of what I do when I am not working.",
+  "items": [
+    {
+      "title": "Electronic music",
+      "body": "Melodic house and techno, mostly while working or on a plane. I keep a playlist that I actually update."
+    },
+    {
+      "title": "Staying active",
+      "body": "Yoga in the morning, gym when the week allows it. It is the only reliable way I stay sane on the road."
+    },
+    {
+      "title": "Startups, VC and AI",
+      "body": "I read about them for work and then keep reading on the weekend, which probably says something."
+    },
+    {
+      "title": "Travel",
+      "body": "I like the first 48 hours in a new city, when you still have no idea how anything works."
+    }
+  ],
+  "spotify": {
+    "playlistEmbedUrl": "https://open.spotify.com/embed/playlist/[PLACEHOLDER]?utm_source=generator",
+    "playlistTitle": "[PLACEHOLDER: playlist name]",
+    "nowPlayingNote": "[PLACEHOLDER: what I have on repeat this month]"
+  }
+}

@@ -1,0 +1,18 @@
+---
+import { site } from "../lib/content";
+
+const { provider, plausibleDomain } = site.analytics;
+const plausibleReady = provider === "plausible" && !plausibleDomain.includes("[PLACEHOLDER");
+---
+
+{/*
+    Both options are cookie free, so the site does not need a cookie banner.
+    Set analytics.provider in content/site.json to "plausible" or "vercel".
+  */}
+{plausibleReady && <script
+  is:inline
+  defer
+  data-domain={plausibleDomain}
+  src="https://plausible.io/js/script.js"
+></script>}
+{provider === "vercel" && <script is:inline defer src="/_vercel/insights/script.js"></script>}

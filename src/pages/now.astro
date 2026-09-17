@@ -1,0 +1,51 @@
+---
+import { getEntry, render } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { sections, site } from "../lib/content";
+
+const entry = await getEntry("pages", "now");
+if (!entry) throw new Error("content/now.md is missing");
+const { Content } = await render(entry);
+
+const updated = new Intl.DateTimeFormat("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+}).format(entry.data.updated);
+---
+
+<Base
+  title={`Now - ${site.name}`}
+  description={`What ${site.name} is focused on right now.`}
+  navSections={[...sections]}
+>
+  <article class="mx-auto max-w-2xl px-6 py-16 sm:py-24">
+    <div class="reveal is-visible">
+      <p class="font-mono text-xs uppercase tracking-[0.2em] accent">Now</p>
+      <h1 class="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">
+        What I am focused on.
+      </h1>
+      <p class="mt-4 font-mono text-sm text-ink-soft dark:text-chalk-soft">
+        Updated {updated}
+        {entry.data.location ? ` from ${entry.data.location}` : ""}
+      </p>
+    </div>
+
+    <div class="prose-custom reveal mt-12 space-y-5 text-lg leading-relaxed text-ink-soft dark:text-chalk-soft">
+      <Content />
+    </div>
+
+    <p class="reveal mt-12 font-mono text-xs text-ink-soft dark:text-chalk-soft">
+      This is a{" "}
+      <a
+        class="link-underline"
+        href="https://nownownow.com/about"
+        target="_blank"
+        rel="noopener"
+      >
+        now page
+      </a>
+      . Edit it in content/now.md.
+    </p>
+  </article>
+</Base>

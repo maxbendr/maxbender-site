@@ -1,0 +1,24 @@
+{
+  "name": "Max Bender",
+  "siteUrl": "https://maxbender.com",
+  "positioning": "I help corporates work with startups, and I build things with AI.",
+  "subline": "Open Innovation at Plug and Play. Based in Valencia, usually somewhere else.",
+  "description": "Max Bender works in open innovation at Plug and Play, connecting corporates with startups across Europe, the Middle East, West Africa and the Caucasus, and builds AI side projects.",
+  "email": "hello@maxbender.com",
+  "cvUrl": "/max-bender-cv.pdf",
+  "headshot": "/images/headshot.jpg",
+  "ogImage": "/og.png",
+  "links": {
+    "linkedin": "https://www.linkedin.com/in/[PLACEHOLDER]",
+    "spotify": "https://open.spotify.com/user/[PLACEHOLDER]",
+    "github": "https://github.com/[PLACEHOLDER]"
+  },
+  "contact": {
+    "note": "Open to talking about startups, innovation programs and AI builds.",
+    "formEndpoint": "https://formspree.io/f/[PLACEHOLDER]"
+  },
+  "analytics": {
+    "provider": "none",
+    "plausibleDomain": "[PLACEHOLDER: maxbender.com]"
+  }
+}

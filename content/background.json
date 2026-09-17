@@ -1,0 +1,47 @@
+{
+  "intro": "Finance first, then consulting, then startups. The through line is that I like being the person between two worlds that do not speak the same language.",
+  "timeline": [
+    {
+      "period": "Now",
+      "title": "Open Innovation, Plug and Play",
+      "location": "Valencia",
+      "note": "Running innovation programs and connecting corporates with startups across several regions."
+    },
+    {
+      "period": "[PLACEHOLDER: years]",
+      "title": "Founder's Associate, Gaidnts",
+      "location": "[PLACEHOLDER: city]",
+      "note": "Early team. A bit of everything, which is the point of the job."
+    },
+    {
+      "period": "[PLACEHOLDER: years]",
+      "title": "M&A, Accuracy",
+      "location": "[PLACEHOLDER: city]",
+      "note": "Transaction work. Learned how to be precise under time pressure."
+    },
+    {
+      "period": "[PLACEHOLDER: years]",
+      "title": "Eurogroup Consulting",
+      "location": "[PLACEHOLDER: city]",
+      "note": "Consulting projects with large organizations."
+    },
+    {
+      "period": "[PLACEHOLDER: years]",
+      "title": "CEMS MIM, Bocconi and Rotterdam School of Management",
+      "location": "Milan and Rotterdam",
+      "note": "Two schools, one degree, a lot of trains."
+    },
+    {
+      "period": "[PLACEHOLDER: year]",
+      "title": "Exchange, UC Berkeley Haas",
+      "location": "Berkeley",
+      "note": "First real look at how the Valley actually works."
+    },
+    {
+      "period": "[PLACEHOLDER: years]",
+      "title": "BSc International Business, Maastricht University",
+      "location": "Maastricht",
+      "note": "Finance track."
+    }
+  ]
+}

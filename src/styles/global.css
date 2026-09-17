@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, monospace;
+
+  --color-ink: #12100e;
+  --color-ink-soft: #55504a;
+  --color-paper: #fbfaf8;
+  --color-paper-soft: #f2efea;
+  --color-night: #0d0c0b;
+  --color-night-soft: #171513;
+  --color-chalk: #f4f2ef;
+  --color-chalk-soft: #a49e96;
+  --color-accent: #d6421c;
+  --color-accent-dark: #ff6a3d;
+}
+
+:root {
+  color-scheme: light;
+  --edge: rgba(18, 16, 14, 0.1);
+}
+
+.dark {
+  color-scheme: dark;
+  --edge: rgba(244, 242, 239, 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  @apply bg-paper text-ink dark:bg-night dark:text-chalk;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: #fff;
+}
+
+.dark ::selection {
+  background-color: var(--color-accent-dark);
+  color: #12100e;
+}
+
+.edge {
+  border-color: var(--edge);
+}
+
+.accent {
+  @apply text-accent dark:text-accent-dark;
+}
+
+.link-underline {
+  @apply relative inline-flex items-center gap-1 transition-colors duration-200;
+  text-decoration: underline;
+  text-decoration-color: var(--edge);
+  text-underline-offset: 4px;
+}
+
+.link-underline:hover {
+  @apply text-accent dark:text-accent-dark;
+  text-decoration-color: currentColor;
+}
+
+.prose-custom h2 {
+  @apply mt-10 text-xl font-semibold tracking-tight text-ink dark:text-chalk;
+}
+
+.prose-custom a {
+  @apply underline underline-offset-4;
+}
+
+/* Entrance animation, applied only when the element scrolls into view. */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

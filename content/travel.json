@@ -1,0 +1,53 @@
+{
+  "intro": "Places I have worked, scouted or spoken in. Click a pin for the short version.",
+  "places": [
+    {
+      "city": "Valencia",
+      "country": "Spain",
+      "lat": 39.4699,
+      "lng": -0.3763,
+      "note": "Home base. Good light, good food, and a startup scene that grew up fast.",
+      "url": ""
+    },
+    {
+      "city": "Tbilisi",
+      "country": "Georgia",
+      "lat": 41.7151,
+      "lng": 44.8271,
+      "note": "[PLACEHOLDER: one line about the work here.] Founders here build for export from day one.",
+      "url": ""
+    },
+    {
+      "city": "Yerevan",
+      "country": "Armenia",
+      "lat": 40.1792,
+      "lng": 44.4991,
+      "note": "[PLACEHOLDER: one line about the work here.] Deep tech talent density that surprises people.",
+      "url": ""
+    },
+    {
+      "city": "Abu Dhabi",
+      "country": "United Arab Emirates",
+      "lat": 24.4539,
+      "lng": 54.3773,
+      "note": "[PLACEHOLDER: one line about the work here.] Capital moves quickly when the mandate is clear.",
+      "url": ""
+    },
+    {
+      "city": "Lagos",
+      "country": "Nigeria",
+      "lat": 6.5244,
+      "lng": 3.3792,
+      "note": "[PLACEHOLDER: one line about the work here.] The most energy per square meter I have seen anywhere.",
+      "url": ""
+    },
+    {
+      "city": "Sunnyvale",
+      "country": "United States",
+      "lat": 37.3688,
+      "lng": -122.0363,
+      "note": "[PLACEHOLDER: one line about the work here.] Headquarters trips and a lot of jet lag.",
+      "url": ""
+    }
+  ]
+}

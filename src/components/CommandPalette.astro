@@ -1,0 +1,164 @@
+---
+import { site } from "../lib/content";
+
+interface Props {
+  sections: { id: string; label: string }[];
+}
+
+const { sections } = Astro.props;
+
+const commands = [
+  ...sections.map((section) => ({
+    label: section.label,
+    hint: "Section",
+    href: `/#${section.id}`,
+  })),
+  { label: "Now", hint: "Page", href: "/now" },
+  { label: "LinkedIn", hint: "External", href: site.links.linkedin },
+  { label: "Spotify", hint: "External", href: site.links.spotify },
+  { label: "Download CV", hint: "File", href: site.cvUrl },
+  { label: "Toggle dark mode", hint: "Action", href: "#theme" },
+];
+---
+
+<div
+  class="fixed inset-0 z-50 hidden items-start justify-center bg-night/40 px-4 pt-[18vh] backdrop-blur-sm"
+  data-palette
+  role="dialog"
+  aria-modal="true"
+  aria-label="Command palette"
+>
+  <div class="edge w-full max-w-lg overflow-hidden rounded-2xl border bg-paper shadow-2xl dark:bg-night-soft">
+    <input
+      type="text"
+      data-palette-input
+      placeholder="Jump to..."
+      aria-label="Search commands"
+      class="edge w-full border-b bg-transparent px-5 py-4 text-base outline-none placeholder:text-ink-soft dark:placeholder:text-chalk-soft"
+    />
+    <ul class="max-h-72 overflow-y-auto py-2" data-palette-list>
+      {commands.map((command, index) => (
+        <li>
+          <a
+            href={command.href}
+            data-command
+            data-index={String(index)}
+            data-label={command.label.toLowerCase()}
+            class="flex items-center justify-between px-5 py-2.5 text-sm transition-colors data-[active=true]:bg-paper-soft dark:data-[active=true]:bg-night"
+          >
+            <span>{command.label}</span>
+            <span class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-soft dark:text-chalk-soft">
+              {command.hint}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p class="edge border-t px-5 py-3 font-mono text-[11px] text-ink-soft dark:text-chalk-soft">
+      Enter to go, Esc to close
+    </p>
+  </div>
+</div>
+
+<script>
+  const palette = document.querySelector<HTMLElement>("[data-palette]");
+  const input = document.querySelector<HTMLInputElement>("[data-palette-input]");
+  const items = Array.from(document.querySelectorAll<HTMLAnchorElement>("[data-command]"));
+  let active = 0;
+
+  const visible = () => items.filter((item) => !item.parentElement?.hidden);
+
+  const paint = () => {
+    const shown = visible();
+    active = Math.max(0, Math.min(active, shown.length - 1));
+    items.forEach((item) => item.setAttribute("data-active", "false"));
+    shown[active]?.setAttribute("data-active", "true");
+    shown[active]?.scrollIntoView({ block: "nearest" });
+  };
+
+  const open = () => {
+    palette?.classList.remove("hidden");
+    palette?.classList.add("flex");
+    if (input) input.value = "";
+    items.forEach((item) => {
+      if (item.parentElement) item.parentElement.hidden = false;
+    });
+    active = 0;
+    paint();
+    input?.focus();
+  };
+
+  const close = () => {
+    palette?.classList.add("hidden");
+    palette?.classList.remove("flex");
+  };
+
+  const run = (item: HTMLAnchorElement) => {
+    if (item.getAttribute("href") === "#theme") {
+      const isDark = document.documentElement.classList.toggle("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+      close();
+      return;
+    }
+    close();
+    window.location.assign(item.href);
+  };
+
+  document.querySelectorAll("[data-palette-open]").forEach((button) => {
+    button.addEventListener("click", open);
+  });
+
+  palette?.addEventListener("click", (event) => {
+    if (event.target === palette) close();
+  });
+
+  input?.addEventListener("input", () => {
+    const query = input.value.trim().toLowerCase();
+    items.forEach((item) => {
+      const match = (item.dataset.label ?? "").includes(query);
+      if (item.parentElement) item.parentElement.hidden = !match;
+    });
+    active = 0;
+    paint();
+  });
+
+  items.forEach((item) => {
+    item.addEventListener("mouseenter", () => {
+      active = visible().indexOf(item);
+      paint();
+    });
+    item.addEventListener("click", (event) => {
+      event.preventDefault();
+      run(item);
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    const isOpen = !palette?.classList.contains("hidden");
+
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      isOpen ? close() : open();
+      return;
+    }
+
+    if (!isOpen) return;
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      close();
+    } else if (event.key === "ArrowDown") {
+      event.preventDefault();
+      active += 1;
+      paint();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      active -= 1;
+      paint();
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      const item = visible()[active];
+      if (item) run(item);
+    }
+  });
+</script>
