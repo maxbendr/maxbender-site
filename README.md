@@ -32,7 +32,8 @@ rebuilds. Anything marked `[PLACEHOLDER]` still needs real content.
 | `content/writing.json`    | LinkedIn posts: title, one line summary, url, date                                              |
 | `content/travel.json`     | Map pins: city, country, lat, lng, note, optional url                                           |
 | `content/background.json` | The timeline on the Background section                                                          |
-| `content/likes.json`      | The "What I like" items and the Spotify embed                                                   |
+| `content/likes.json`      | The "What I like" items                                                                         |
+| `content/mentoring.json`  | The Mentoring section: copy, photo path and the three cards                                     |
 | `content/now.md`          | The `/now` page                                                                                 |
 
 Adding a card or a log entry means adding a file. Removing one means deleting
@@ -42,7 +43,9 @@ the file. No code changes needed.
 
 Drop files in `public/`:
 
-- `public/images/headshot.jpg` for the headshot
+- `public/images/max-portrait.jpg` for the hero portrait (`headshot` in `content/site.json`)
+- `public/images/speaking.jpg` for the photo under "What I do"
+- `public/images/mentoring.jpg` for the Mentoring photo (`image` in `content/mentoring.json`)
 - `public/images/projects/<project>.png` for project screenshots, matching the
   `screenshot` path in the project's markdown file. If the file is missing, the
   card shows a placeholder tile instead of a broken image

@@ -1,46 +1,18 @@
 ---
 import Section from "./Section.astro";
 import { likes } from "../lib/content";
-
-const embedReady = !likes.spotify.playlistEmbedUrl.includes("[PLACEHOLDER");
 ---
 
 <Section id="likes" label="What I like" title="Off the clock." intro={likes.intro}>
-  <div class="grid gap-12 lg:grid-cols-[1.1fr_1fr]">
-    <ul class="space-y-6">
-      {likes.items.map((item, index) => (
-        <li class="reveal" style={`transition-delay:${index * 50}ms`}>
-          <h3 class="text-lg font-medium tracking-tight">{item.title}</h3>
-          <p class="mt-1 text-ink-soft dark:text-chalk-soft">{item.body}</p>
-        </li>
-      ))}
-    </ul>
-
-    <div class="reveal">
-      <p class="font-mono text-xs uppercase tracking-[0.2em] text-ink-soft dark:text-chalk-soft">
-        On repeat
-      </p>
-      <p class="mt-2 text-ink-soft dark:text-chalk-soft">{likes.spotify.nowPlayingNote}</p>
-      <div class="edge mt-4 overflow-hidden rounded-2xl border">
-        {embedReady ? (
-          <iframe
-            title={`Spotify playlist: ${likes.spotify.playlistTitle}`}
-            src={likes.spotify.playlistEmbedUrl}
-            width="100%"
-            height="352"
-            style="border:0"
-            loading="lazy"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          ></iframe>
-        ) : (
-          <div class="flex h-[352px] flex-col items-center justify-center gap-2 bg-paper-soft p-6 text-center dark:bg-night-soft">
-            <span class="font-mono text-sm accent">Spotify embed</span>
-            <span class="font-mono text-xs text-ink-soft dark:text-chalk-soft">
-              [PLACEHOLDER: paste a playlist embed URL in content/likes.json]
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
-  </div>
+  <ul class="grid gap-px overflow-hidden rounded-2xl bg-[var(--edge)] sm:grid-cols-2">
+    {likes.items.map((item, index) => (
+      <li
+        class="reveal bg-paper p-7 transition-colors duration-300 hover:bg-paper-soft dark:bg-night dark:hover:bg-night-soft"
+        style={`transition-delay:${index * 50}ms`}
+      >
+        <h3 class="text-lg font-medium tracking-tight">{item.title}</h3>
+        <p class="mt-1 text-ink-soft dark:text-chalk-soft">{item.body}</p>
+      </li>
+    ))}
+  </ul>
 </Section>

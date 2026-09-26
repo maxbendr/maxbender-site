@@ -1,5 +1,6 @@
 import backgroundData from "../../content/background.json";
 import likesData from "../../content/likes.json";
+import mentoringData from "../../content/mentoring.json";
 import siteData from "../../content/site.json";
 import travelData from "../../content/travel.json";
 import writingData from "../../content/writing.json";
@@ -13,8 +14,9 @@ export interface SiteContent {
   email: string;
   cvUrl: string;
   headshot: string;
+  headshotAlt: string;
   ogImage: string;
-  links: { linkedin: string; spotify: string; github: string };
+  links: { linkedin: string; github: string };
   contact: { note: string; formEndpoint: string };
   analytics: { provider: "none" | "plausible" | "vercel"; plausibleDomain: string };
 }
@@ -51,11 +53,16 @@ export interface TravelContent {
 export interface LikesContent {
   intro: string;
   items: { title: string; body: string }[];
-  spotify: {
-    playlistEmbedUrl: string;
-    playlistTitle: string;
-    nowPlayingNote: string;
-  };
+}
+
+export interface MentoringContent {
+  label: string;
+  title: string;
+  intro: string;
+  image: string;
+  imageAlt: string;
+  items: { title: string; body: string }[];
+  cta: string;
 }
 
 export const site = siteData as SiteContent;
@@ -63,6 +70,7 @@ export const writing = writingData as WritingContent;
 export const background = backgroundData as BackgroundContent;
 export const travel = travelData as TravelContent;
 export const likes = likesData as LikesContent;
+export const mentoring = mentoringData as MentoringContent;
 
 /** Splits an email so it is never present as a single string in the markup. */
 export function obfuscateEmail(email: string): { user: string; domain: string } {
@@ -72,6 +80,7 @@ export function obfuscateEmail(email: string): { user: string; domain: string } 
 
 export const sections = [
   { id: "work", label: "What I do" },
+  { id: "mentoring", label: "Mentoring" },
   { id: "building", label: "Building" },
   { id: "writing", label: "Writing" },
   { id: "travel", label: "Travel" },

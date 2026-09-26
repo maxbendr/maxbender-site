@@ -17,10 +17,5 @@
       "title": "Travel",
       "body": "I like the first 48 hours in a new city, when you still have no idea how anything works."
     }
-  ],
-  "spotify": {
-    "playlistEmbedUrl": "https://open.spotify.com/embed/playlist/[PLACEHOLDER]?utm_source=generator",
-    "playlistTitle": "[PLACEHOLDER: playlist name]",
-    "nowPlayingNote": "[PLACEHOLDER: what I have on repeat this month]"
-  }
+  ]
 }
