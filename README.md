@@ -29,6 +29,7 @@ rebuilds. Anything marked `[PLACEHOLDER]` still needs real content.
 | `content/work/*.md`       | The "What I do" cards. One file per card, `order` sets the position                             |
 | `content/projects/*.md`   | The "Building" cards. Name, tagline, stack, link, screenshot path                               |
 | `content/buildlog/*.md`   | The build log feed. One file per update, sorted by `date`                                       |
+| `content/posts/*.md`      | Articles. One file per article, filename is the URL slug                                        |
 | `content/writing.json`    | LinkedIn posts: title, one line summary, url, date                                              |
 | `content/travel.json`     | Map pins: city, country, lat, lng, note, optional url                                           |
 | `content/background.json` | The timeline on the Background section                                                          |
@@ -38,6 +39,32 @@ rebuilds. Anything marked `[PLACEHOLDER]` still needs real content.
 
 Adding a card or a log entry means adding a file. Removing one means deleting
 the file. No code changes needed.
+
+### Writing an article
+
+Create a Markdown file in `content/posts/`. The filename becomes the URL, so
+`content/posts/why-pilots-stall.md` is published at `/writing/why-pilots-stall/`.
+
+```md
+---
+title: Why corporate pilots stall in month four
+subtitle: One line under the headline. Optional.
+date: 2026-03-14
+cover: /images/pilots.jpg # optional
+coverAlt: Description of the cover image # optional
+tags: # optional
+  - open innovation
+draft: false # true keeps it out of the production build
+---
+
+Your article in plain Markdown. Headings, lists, quotes, links and images all
+have styles already.
+```
+
+The article shows up at `/writing/`, the newest three appear in the Writing
+section on the home page, every article is in the command palette, and
+`/rss.xml` updates itself. Reading time is calculated from the word count.
+Two example articles ship with the repo, delete them when you write your own.
 
 ### Images and files
 

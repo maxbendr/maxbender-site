@@ -1,12 +1,48 @@
 ---
 import Section from "./Section.astro";
-import { site, writing } from "../lib/content";
+import { formatPostDate, getPosts, readingTime, site, writing } from "../lib/content";
 
+const posts = (await getPosts()).slice(0, 3);
 const dateFormat = new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" });
 ---
 
 <Section id="writing" label="Writing" title="Posts worth reading twice." intro={writing.intro}>
-  <ul>
+  {posts.length > 0 && (
+    <ul class="grid gap-px overflow-hidden rounded-2xl bg-[var(--edge)] sm:grid-cols-3">
+      {posts.map((post, index) => (
+        <li
+          class="reveal bg-paper transition-colors duration-300 hover:bg-paper-soft dark:bg-night dark:hover:bg-night-soft"
+          style={`transition-delay:${index * 50}ms`}
+        >
+          <a href={`/writing/${post.id}/`} class="group flex h-full flex-col p-7">
+            <p class="font-mono text-xs text-ink-soft dark:text-chalk-soft">
+              {formatPostDate(post.data.date)}
+              <span class="mx-2">/</span>
+              {readingTime(post.body ?? "")}
+            </p>
+            <h3 class="mt-3 text-lg font-medium tracking-tight transition-colors group-hover:text-accent dark:group-hover:text-accent-dark">
+              {post.data.title}
+            </h3>
+            {post.data.subtitle && (
+              <p class="mt-2 text-sm text-ink-soft dark:text-chalk-soft">
+                {post.data.subtitle}
+              </p>
+            )}
+            <span class="mt-auto pt-6 font-mono text-xs accent">Read</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <p class="reveal mt-6">
+    <a class="link-underline text-sm font-medium" href="/writing/">
+      All writing
+    </a>
+  </p>
+
+  <h3 class="reveal mt-16 font-mono text-xs uppercase tracking-[0.2em] accent">On LinkedIn</h3>
+  <ul class="mt-4">
     {writing.posts.map((post, index) => (
       <li class="reveal edge border-t" style={`transition-delay:${index * 50}ms`}>
         <a

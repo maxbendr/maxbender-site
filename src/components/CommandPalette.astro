@@ -1,5 +1,5 @@
 ---
-import { site } from "../lib/content";
+import { getPosts, site } from "../lib/content";
 
 interface Props {
   sections: { id: string; label: string }[];
@@ -7,11 +7,19 @@ interface Props {
 
 const { sections } = Astro.props;
 
+const posts = await getPosts();
+
 const commands = [
   ...sections.map((section) => ({
     label: section.label,
     hint: "Section",
     href: `/#${section.id}`,
+  })),
+  { label: "All writing", hint: "Page", href: "/writing/" },
+  ...posts.map((post) => ({
+    label: post.data.title,
+    hint: "Post",
+    href: `/writing/${post.id}/`,
   })),
   { label: "Now", hint: "Page", href: "/now" },
   { label: "LinkedIn", hint: "External", href: site.links.linkedin },

@@ -1,0 +1,136 @@
+---
+import type { GetStaticPaths } from "astro";
+import { render } from "astro:content";
+
+import Base from "../../layouts/Base.astro";
+import { formatPostDate, getPosts, readingTime, site } from "../../lib/content";
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  return posts.map((post, index) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      newer: index > 0 ? posts[index - 1] : undefined,
+      older: index < posts.length - 1 ? posts[index + 1] : undefined,
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post, newer, older } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Base
+  title={`${post.data.title} - ${site.name}`}
+  description={post.data.subtitle || post.data.title}
+  ogType="article"
+>
+  <article class="mx-auto max-w-2xl px-6 py-16 sm:py-20">
+    <nav
+      aria-label="Breadcrumb"
+      class="reveal is-visible font-mono text-xs text-ink-soft dark:text-chalk-soft"
+    >
+      <a class="link-underline" href="/">
+        Home
+      </a>
+      <span class="mx-2">/</span>
+      <a class="link-underline" href="/writing/">
+        Writing
+      </a>
+    </nav>
+
+    <header class="reveal is-visible mt-8">
+      <h1 class="text-3xl font-semibold leading-tight tracking-tight sm:text-5xl">
+        {post.data.title}
+      </h1>
+      {post.data.subtitle && (
+        <p class="mt-4 text-lg text-ink-soft sm:text-xl dark:text-chalk-soft">
+          {post.data.subtitle}
+        </p>
+      )}
+
+      <div class="edge mt-8 flex items-center gap-3 border-b pb-8">
+        <img
+          src={site.headshot}
+          alt=""
+          width="80"
+          height="80"
+          loading="lazy"
+          decoding="async"
+          class="size-10 rounded-full object-cover"
+        />
+        <div class="text-sm">
+          <p class="font-medium">{site.name}</p>
+          <p class="font-mono text-xs text-ink-soft dark:text-chalk-soft">
+            {formatPostDate(post.data.date)}
+            <span class="mx-2">/</span>
+            {readingTime(post.body ?? "")}
+          </p>
+        </div>
+      </div>
+    </header>
+
+    {post.data.cover && (
+      <figure class="reveal mt-10">
+        <img
+          src={post.data.cover}
+          alt={post.data.coverAlt}
+          loading="lazy"
+          decoding="async"
+          class="edge w-full rounded-2xl border object-cover"
+        />
+      </figure>
+    )}
+
+    <div class="prose-article reveal mt-10">
+      <Content />
+    </div>
+
+    {post.data.tags.length > 0 && (
+      <ul class="reveal mt-12 flex flex-wrap gap-2">
+        {post.data.tags.map((tag) => (
+          <li class="edge rounded-full border px-3 py-1 font-mono text-xs text-ink-soft dark:text-chalk-soft">
+            {tag}
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <nav
+      class="edge mt-12 grid gap-6 border-t pt-8 text-sm sm:grid-cols-2"
+      aria-label="More posts"
+    >
+      <div>
+        {older && (
+          <a class="group block" href={`/writing/${older.id}/`}>
+            <span class="font-mono text-xs text-ink-soft dark:text-chalk-soft">Older</span>
+            <span class="mt-1 block font-medium transition-colors group-hover:text-accent dark:group-hover:text-accent-dark">
+              {older.data.title}
+            </span>
+          </a>
+        )}
+      </div>
+      <div class="sm:text-right">
+        {newer && (
+          <a class="group block" href={`/writing/${newer.id}/`}>
+            <span class="font-mono text-xs text-ink-soft dark:text-chalk-soft">Newer</span>
+            <span class="mt-1 block font-medium transition-colors group-hover:text-accent dark:group-hover:text-accent-dark">
+              {newer.data.title}
+            </span>
+          </a>
+        )}
+      </div>
+    </nav>
+
+    <p class="reveal mt-12 font-mono text-xs text-ink-soft dark:text-chalk-soft">
+      <a class="link-underline" href="/writing/">
+        All writing
+      </a>
+      <span class="mx-2">/</span>
+      <a class="link-underline" href="/#contact">
+        Tell me I am wrong
+      </a>
+    </p>
+  </article>
+</Base>

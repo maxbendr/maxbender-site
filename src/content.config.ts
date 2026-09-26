@@ -32,6 +32,19 @@ const buildlog = defineCollection({
   }),
 });
 
+const posts = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./content/posts" }),
+  schema: z.object({
+    title: z.string(),
+    subtitle: z.string().default(""),
+    date: z.coerce.date(),
+    cover: z.string().optional(),
+    coverAlt: z.string().default(""),
+    tags: z.array(z.string()).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
 const pages = defineCollection({
   loader: glob({ pattern: "now.md", base: "./content" }),
   schema: z.object({
@@ -41,4 +54,4 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { work, projects, buildlog, pages };
+export const collections = { work, projects, buildlog, posts, pages };

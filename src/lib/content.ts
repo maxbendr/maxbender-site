@@ -1,3 +1,5 @@
+import { getCollection } from "astro:content";
+
 import backgroundData from "../../content/background.json";
 import likesData from "../../content/likes.json";
 import mentoringData from "../../content/mentoring.json";
@@ -71,6 +73,31 @@ export const background = backgroundData as BackgroundContent;
 export const travel = travelData as TravelContent;
 export const likes = likesData as LikesContent;
 export const mentoring = mentoringData as MentoringContent;
+
+/** Newest first, drafts dropped from the production build. */
+export async function getPosts() {
+  const entries = await getCollection(
+    "posts",
+    ({ data }) => import.meta.env.DEV || !data.draft,
+  );
+  return entries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+}
+
+const postDateFormat = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+export function formatPostDate(date: Date): string {
+  return postDateFormat.format(date);
+}
+
+/** Rough minutes at 225 words per minute, which is close enough for a label. */
+export function readingTime(body: string): string {
+  const words = body.trim().split(/\s+/).filter(Boolean).length;
+  return `${Math.max(1, Math.round(words / 225))} min read`;
+}
 
 /** Splits an email so it is never present as a single string in the markup. */
 export function obfuscateEmail(email: string): { user: string; domain: string } {
