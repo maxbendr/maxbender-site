@@ -8,7 +8,13 @@ const dateFormat = new Intl.DateTimeFormat("en-US", { month: "long", year: "nume
 
 <Section id="writing" label="Writing" title="Posts worth reading twice." intro={writing.intro}>
   {posts.length > 0 && (
-    <ul class="grid gap-px overflow-hidden rounded-2xl bg-[var(--edge)] sm:grid-cols-3">
+    <ul
+      class:list={[
+        "grid gap-px overflow-hidden rounded-2xl bg-[var(--edge)]",
+        posts.length === 2 && "sm:grid-cols-2",
+        posts.length >= 3 && "sm:grid-cols-3",
+      ]}
+    >
       {posts.map((post, index) => (
         <li
           class="reveal bg-paper transition-colors duration-300 hover:bg-paper-soft dark:bg-night dark:hover:bg-night-soft"
