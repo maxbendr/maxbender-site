@@ -461,7 +461,7 @@ import Game from "../../layouts/Game.astro";
         ctx.textAlign = "center";
         ctx.fillText("Shift over", CX, CY - 4);
         ctx.font = "13px ui-monospace, monospace";
-        ctx.fillText(`${score} cars through`, CX, CY + 18);
+        ctx.fillText(`${score} points`, CX, CY + 18);
         ctx.textAlign = "left";
       }
     };
@@ -498,7 +498,7 @@ import Game from "../../layouts/Game.astro";
     const best = Number(localStorage.getItem(BEST_KEY) ?? 0);
     resize();
     reset();
-    hud.textContent = best ? `Best shift: ${best} cars` : "Space or tap switches the lights";
+    hud.textContent = best ? `Best shift: ${best} points` : "Space or tap switches the lights";
     frame();
   }
 </script>
