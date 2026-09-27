@@ -285,8 +285,11 @@ import Game from "../../layouts/Game.astro";
           let limit = ahead ? ahead.t - SPACING : Infinity;
           if (!car.committed) {
             const line = STOP_T[dir];
-            if (light === "green" && car.t >= line - 0.5) car.committed = true;
-            else limit = Math.min(limit, line);
+            if (light === "green") {
+              if (car.t >= line - 5) car.committed = true;
+            } else {
+              limit = Math.min(limit, line);
+            }
           }
 
           const room = limit - car.t;
