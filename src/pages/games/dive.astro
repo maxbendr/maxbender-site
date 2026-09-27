@@ -12,8 +12,8 @@ import Game from "../../layouts/Game.astro";
       <div class="flex items-baseline justify-between gap-3 font-mono text-xs">
         <p data-call class="truncate text-ink dark:text-chalk"></p>
         <p class="shrink-0 text-ink-soft dark:text-chalk-soft">
-          <span data-round>1</span> &middot; <span data-total>0</span> pts &middot;{" "}
-          <span data-lives></span>
+          <span data-round>1</span> &middot; <span data-height></span> &middot;{" "}
+          <span data-total>0</span> pts &middot; <span data-lives></span>
         </p>
       </div>
 
@@ -24,7 +24,7 @@ import Game from "../../layouts/Game.astro";
           aria-label="Cliff diving game"
         ></canvas>
         <p
-          class="pointer-events-none absolute inset-x-0 bottom-0 p-3 text-center font-mono text-xs text-white/90 drop-shadow"
+          class="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent p-3 pt-6 text-center font-mono text-xs text-white"
           data-hud
           aria-live="polite"
         ></p>
@@ -108,6 +108,14 @@ import Game from "../../layouts/Game.astro";
   const BEST_KEY = "dive:best";
   const LIVES = 3;
   const STEPS = [0.5, 1, 1.5, 2, 2.5, 3];
+  const LEDGE_Y = 30;
+  const STAND_Y = LEDGE_Y - 38;
+  const CLIFF_W = 74;
+  const ROCKS = [
+    { face: "#4a443c", light: "#5d564c", dark: "#332f29" },
+    { face: "#6b4a38", light: "#825b44", dark: "#4a3225" },
+    { face: "#3b3a44", light: "#4c4b57", dark: "#28272f" },
+  ];
 
   type Phase = "ready" | "charging" | "air" | "splash" | "over";
 
@@ -120,6 +128,7 @@ import Game from "../../layouts/Game.astro";
     const roundLabel = root.querySelector<HTMLElement>("[data-round]")!;
     const totalLabel = root.querySelector<HTMLElement>("[data-total]")!;
     const livesLabel = root.querySelector<HTMLElement>("[data-lives]")!;
+    const heightLabel = root.querySelector<HTMLElement>("[data-height]")!;
     const summary = root.querySelector<HTMLElement>("[data-summary]")!;
     const summaryHeadline = root.querySelector<HTMLElement>("[data-summary-headline]")!;
     const summaryNote = root.querySelector<HTMLElement>("[data-summary-note]")!;
@@ -133,12 +142,16 @@ import Game from "../../layouts/Game.astro";
     let charge = 0;
     let holdingJump = false;
     let spinInput = 0;
-    let drop = 380;
+    const FIRST_DROP = 335;
+    let drop = FIRST_DROP;
     /** Called trick as signed turns per segment; positive is front. */
     let call: number[] = [1];
     let headFirst = false;
     let splashTimer = 0;
     let verdict = "";
+    let rock = ROCKS[0];
+    /** Horizontal bite taken out of the cliff face, one entry per 40px of rock. */
+    let edge: number[] = [];
 
     const particles: { x: number; y: number; vx: number; vy: number; life: number }[] = [];
     const diver = { x: 96, y: 0, vx: 0, vy: 0, angle: 0, spin: 0, rotation: 0 };
@@ -192,18 +205,28 @@ import Game from "../../layouts/Game.astro";
         .map((s) => `${turnsLabel(Math.abs(s))} ${s > 0 ? "front" : "back"}`)
         .join(" \u2192 ")}, ${head ? "head" : "feet"} first`;
 
+    const buildCliff = () => {
+      rock = ROCKS[Math.floor(Math.random() * ROCKS.length)];
+      edge = [];
+      for (let y = -240; y < drop + 200; y += 40) {
+        edge.push(Math.random() * 20 + (y < LEDGE_Y ? 6 : 0));
+      }
+    };
+
     const setupDive = () => {
-      drop = Math.min(1400, 340 + dive * 55 + Math.floor(Math.random() * 3) * 40);
+      drop = Math.min(1600, drop + 45 + Math.floor(Math.random() * 4) * 30);
+      buildCliff();
       call = rollCall(drop, dive);
       headFirst = Math.abs(call.reduce((a, b) => a + b, 0)) % 1 !== 0;
       diver.x = 96;
-      diver.y = 0;
+      diver.y = STAND_Y;
       diver.vx = 0;
       diver.vy = 0;
       diver.angle = 0;
       diver.spin = 0;
       diver.rotation = 0;
       done = [];
+      heightLabel.textContent = `${Math.round((drop - STAND_Y) / 10)}m`;
       segmentStart = 0;
       segmentDir = 0;
       charge = 0;
@@ -313,7 +336,7 @@ import Game from "../../layouts/Game.astro";
 
       if (phase === "air") {
         diver.spin += spinInput * SPIN_ACCEL;
-        if (!spinInput) diver.spin *= 0.99;
+        if (!spinInput) diver.spin *= 0.94;
         diver.spin = Math.max(-MAX_SPIN, Math.min(MAX_SPIN, diver.spin));
 
         const dir = Math.abs(diver.spin) > 0.03 ? Math.sign(diver.spin) : 0;
@@ -363,52 +386,56 @@ import Game from "../../layouts/Game.astro";
 
     const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 
+    /** Seen from the side, so rotation reads as a somersault rather than a cartwheel. */
     const drawDiver = (camera: number) => {
+      const grounded = phase === "ready" || phase === "charging";
       const tuck = phase === "air" ? Math.min(1, Math.abs(diver.spin) / MAX_SPIN) : 0;
       const crouch = phase === "charging" ? charge : 0;
 
       ctx.save();
       ctx.translate(diver.x, diver.y - camera);
-      ctx.rotate(diver.angle);
-      ctx.strokeStyle = "#12100e";
-      ctx.fillStyle = "#12100e";
-      ctx.lineWidth = 3;
+      if (!grounded) ctx.rotate(diver.angle);
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
 
-      const hipY = mix(6, 0, crouch);
+      const hipY = grounded ? 6 + crouch * 11 : 6;
+      const shoulderY = hipY - 14;
+      const headY = hipY - 23;
+
+      const arm = grounded
+        ? [-4 - crouch * 6, shoulderY + 7, -6 - crouch * 11, shoulderY + 15 - crouch * 18]
+        : [mix(1, 11, tuck), mix(-22, 1, tuck), mix(2, 9, tuck), mix(-35, 11, tuck)];
+      const leg = grounded
+        ? [5 + crouch * 7, hipY + 15, 1, LEDGE_Y - diver.y]
+        : [mix(0, 13, tuck), mix(22, 1, tuck), mix(0, 4, tuck), mix(38, 12, tuck)];
+
+      const figure = (color: string, offsetX: number, width: number) => {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        limb(offsetX, shoulderY, arm[0] + offsetX, arm[1], arm[2] + offsetX, arm[3]);
+        limb(offsetX, hipY, leg[0] + offsetX, leg[1], leg[2] + offsetX, leg[3]);
+      };
+
+      figure("#5b544c", -3, 2.5);
+
+      ctx.strokeStyle = "#12100e";
+      ctx.fillStyle = "#12100e";
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.arc(0, -16 + crouch * 5, 5.5, 0, TAU);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.moveTo(0, -11 + crouch * 5);
+      ctx.moveTo(0, shoulderY);
       ctx.lineTo(0, hipY);
       ctx.stroke();
-
-      const shoulderY = -8 + crouch * 5;
-      if (crouch) {
-        limb(0, shoulderY, -7, shoulderY + 8, -11, shoulderY + 16);
-        limb(0, shoulderY, 7, shoulderY + 8, 11, shoulderY + 16);
-        limb(0, hipY, -9, hipY + 10, -5, hipY + 22);
-        limb(0, hipY, 9, hipY + 10, 5, hipY + 22);
-      } else {
-        const elbowX = mix(4, 11, tuck);
-        const elbowY = mix(-22, 2, tuck);
-        const handX = mix(2, 7, tuck);
-        const handY = mix(-34, 15, tuck);
-        limb(0, shoulderY, -elbowX, elbowY, -handX, handY);
-        limb(0, shoulderY, elbowX, elbowY, handX, handY);
-
-        const kneeX = mix(3.5, 9, tuck);
-        const kneeY = mix(22, 4, tuck);
-        const footX = mix(3.5, 4, tuck);
-        const footY = mix(38, -5, tuck);
-        limb(0, hipY, -kneeX, kneeY, -footX, footY);
-        limb(0, hipY, kneeX, kneeY, footX, footY);
-      }
+      ctx.beginPath();
+      ctx.arc(1.5, headY, 5.5, 0, TAU);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0.5, headY + 5);
+      ctx.lineTo(0, shoulderY);
+      ctx.stroke();
+      figure("#12100e", 0, 3);
 
       ctx.fillStyle = "#d6421c";
-      ctx.fillRect(-4.5, hipY - 4, 9, 6);
+      ctx.fillRect(-3.5, hipY - 4, 8, 6);
       ctx.restore();
     };
 
@@ -444,16 +471,42 @@ import Game from "../../layouts/Game.astro";
       ctx.fill();
       ctx.globalAlpha = 1;
 
-      ctx.fillStyle = "#3f3a34";
-      ctx.fillRect(0, -220 - camera, 74, drop + 420);
-      ctx.fillStyle = "#524b43";
-      ctx.fillRect(66, -220 - camera, 8, drop + 420);
-      ctx.fillStyle = "rgba(0,0,0,0.18)";
-      for (let y = -200; y < drop + 200; y += 46) {
-        ctx.fillRect(8, y - camera + ((y * 7) % 17), 40, 3);
-      }
-      ctx.fillStyle = "#2c2823";
-      ctx.fillRect(56, -12 - camera, 34, 6);
+      ctx.fillStyle = rock.face;
+      ctx.beginPath();
+      ctx.moveTo(0, -240 - camera);
+      edge.forEach((bite, i) => {
+        const y = -240 + i * 40 - camera;
+        ctx.lineTo(CLIFF_W - bite, y);
+        ctx.lineTo(CLIFF_W - bite * 0.4, y + 20);
+      });
+      ctx.lineTo(0, drop + 200 - camera);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = rock.dark;
+      edge.forEach((bite, i) => {
+        const y = -240 + i * 40 - camera;
+        ctx.fillRect(CLIFF_W - bite - 9, y + 6, 7, 20);
+      });
+      ctx.fillStyle = rock.light;
+      ctx.fillRect(0, -240 - camera, 12, drop + 440);
+
+      ctx.fillStyle = rock.light;
+      ctx.beginPath();
+      ctx.moveTo(CLIFF_W - 14, LEDGE_Y - camera - 8);
+      ctx.lineTo(120, LEDGE_Y - camera - 6);
+      ctx.lineTo(124, LEDGE_Y - camera);
+      ctx.lineTo(CLIFF_W - 14, LEDGE_Y - camera + 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = rock.dark;
+      ctx.beginPath();
+      ctx.moveTo(CLIFF_W - 14, LEDGE_Y - camera + 6);
+      ctx.lineTo(124, LEDGE_Y - camera);
+      ctx.lineTo(112, LEDGE_Y - camera + 22);
+      ctx.lineTo(CLIFF_W - 14, LEDGE_Y - camera + 30);
+      ctx.closePath();
+      ctx.fill();
 
       ctx.fillStyle = "#1d3c52";
       ctx.fillRect(0, waterY, W, H - waterY);
@@ -471,9 +524,9 @@ import Game from "../../layouts/Game.astro";
 
       if (phase === "ready" || phase === "charging") {
         ctx.fillStyle = "rgba(18,16,14,0.15)";
-        ctx.fillRect(84, -18 - camera, 10, 60);
+        ctx.fillRect(130, LEDGE_Y - 60 - camera, 10, 60);
         ctx.fillStyle = "#d6421c";
-        ctx.fillRect(84, 42 - camera - charge * 60, 10, charge * 60);
+        ctx.fillRect(130, LEDGE_Y - camera - charge * 60, 10, charge * 60);
       }
 
       if (phase !== "over") drawDiver(camera);
@@ -486,9 +539,11 @@ import Game from "../../layouts/Game.astro";
       });
       ctx.globalAlpha = 1;
 
-      ctx.fillStyle = "rgba(255,255,255,0.85)";
-      ctx.font = "11px ui-monospace, monospace";
-      ctx.fillText(`${Math.round(drop / 10)}m`, W - 44, 20);
+      ctx.font = "600 13px ui-monospace, monospace";
+      ctx.fillStyle = "rgba(18,16,14,0.55)";
+      ctx.fillText(`${Math.round((drop - STAND_Y) / 10)} m`, W - 52, 24);
+      ctx.fillStyle = "rgba(18,16,14,0.3)";
+      ctx.fillRect(W - 52, 32, 40, 1);
 
       if (phase === "air") {
         const live = [...done, (diver.rotation - segmentStart) / TAU].filter(
@@ -588,6 +643,7 @@ import Game from "../../layouts/Game.astro";
       dive = 1;
       total = 0;
       lives = LIVES;
+      drop = FIRST_DROP;
       streak = 0;
       particles.length = 0;
       summary.classList.add("hidden");
