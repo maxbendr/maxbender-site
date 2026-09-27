@@ -106,7 +106,7 @@ import Game from "../../layouts/Game.astro";
   const MAX_SPIN = 0.3;
   const SPIN_ACCEL = 0.022;
   const ROW = 32;
-  const TOP = -240;
+  const TOP = -560;
   const BEST_KEY = "dive:best";
   const LIVES = 3;
   const STEPS = [0.5, 1, 1.5, 2, 2.5, 3];
@@ -230,7 +230,7 @@ import Game from "../../layouts/Game.astro";
 
     const setupDive = () => {
       const leap = Math.random() < 0.25 ? 150 : 0;
-      drop = Math.min(1800, drop + 30 + Math.random() * 70 + leap);
+      drop = Math.min(2600, drop + 30 + Math.random() * 70 + leap);
       buildCliff();
       call = rollCall(drop, dive);
       headFirst = Math.abs(call.reduce((a, b) => a + b, 0)) % 1 !== 0;
@@ -257,8 +257,10 @@ import Game from "../../layouts/Game.astro";
     };
 
     const jump = () => {
-      diver.vx = 0.8 + charge * 0.8;
-      diver.vy = -(4.2 + charge * 5);
+      const v0 = 4.2 + charge * 5;
+      const frames = (v0 + Math.sqrt(v0 * v0 + 2 * GRAVITY * (drop - diver.y))) / GRAVITY;
+      diver.vx = (70 + charge * 120) / frames;
+      diver.vy = -v0;
       phase = "air";
     };
 
@@ -456,7 +458,7 @@ import Game from "../../layouts/Game.astro";
     };
 
     const draw = () => {
-      const camera = Math.max(-120, Math.min(diver.y - H * 0.42, drop - H * 0.78));
+      const camera = Math.max(-460, Math.min(diver.y - H * 0.42, drop - H * 0.78));
       const waterY = drop - camera;
       const now = performance.now();
 
