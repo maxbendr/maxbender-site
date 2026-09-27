@@ -1,5 +1,6 @@
 ---
 import { site } from "../lib/content";
+import { liveGames } from "../lib/games";
 
 interface Props {
   sections: { id: string; label: string }[];
@@ -12,6 +13,12 @@ const commands = [
     label: section.label,
     hint: "Section",
     href: `/#${section.id}`,
+  })),
+  { label: "Games", hint: "Page", href: "/games" },
+  ...liveGames.map((game) => ({
+    label: game.name,
+    hint: "Game",
+    href: `/games/${game.slug}`,
   })),
   { label: "Now", hint: "Page", href: "/now" },
   { label: "LinkedIn", hint: "External", href: site.links.linkedin },
