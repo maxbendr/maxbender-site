@@ -102,9 +102,11 @@ import Game from "../../layouts/Game.astro";
   const TAU = Math.PI * 2;
   const W = 360;
   const H = 560;
-  const GRAVITY = 0.34;
-  const MAX_SPIN = 0.24;
-  const SPIN_ACCEL = 0.016;
+  const GRAVITY = 0.24;
+  const MAX_SPIN = 0.3;
+  const SPIN_ACCEL = 0.022;
+  const ROW = 32;
+  const TOP = -240;
   const BEST_KEY = "dive:best";
   const LIVES = 3;
   const STEPS = [0.5, 1, 1.5, 2, 2.5, 3];
@@ -150,8 +152,10 @@ import Game from "../../layouts/Game.astro";
     let splashTimer = 0;
     let verdict = "";
     let rock = ROCKS[0];
-    /** Horizontal bite taken out of the cliff face, one entry per 40px of rock. */
+    /** Right-hand outline of the cliff, one x per ROW pixels of rock. */
     let edge: number[] = [];
+    /** Tufts growing out of the face, as [row, length] pairs. */
+    let tufts: [number, number][] = [];
 
     const particles: { x: number; y: number; vx: number; vy: number; life: number }[] = [];
     const diver = { x: 96, y: 0, vx: 0, vy: 0, angle: 0, spin: 0, rotation: 0 };
@@ -171,12 +175,12 @@ import Game from "../../layouts/Game.astro";
 
     /** Frames of air time for a medium-charge jump off a cliff this high. */
     const airFrames = (height: number) => {
-      const v0 = 5.5;
+      const v0 = 6.7;
       return (v0 + Math.sqrt(v0 * v0 + 2 * GRAVITY * height)) / GRAVITY;
     };
 
     const rollCall = (height: number, index: number) => {
-      let budget = ((airFrames(height) - 20) * MAX_SPIN) / TAU;
+      let budget = Math.min(((airFrames(height) - 20) * MAX_SPIN) / TAU, 1.5 + index * 0.5);
       const maxSegments = index < 3 ? 1 : index < 7 ? 2 : 3;
       const segments: number[] = [];
       let dir = Math.random() < 0.6 ? 1 : -1;
@@ -208,13 +212,25 @@ import Game from "../../layouts/Game.astro";
     const buildCliff = () => {
       rock = ROCKS[Math.floor(Math.random() * ROCKS.length)];
       edge = [];
-      for (let y = -240; y < drop + 200; y += 40) {
-        edge.push(Math.random() * 20 + (y < LEDGE_Y ? 6 : 0));
+      tufts = [];
+      const rows = Math.ceil((drop + 440 - TOP) / ROW);
+      const lean = 18 + Math.random() * 26;
+      const jag = 4 + Math.random() * 7;
+      let x = CLIFF_W - 6;
+      for (let i = 0; i < rows; i += 1) {
+        const depth = Math.max(0, (TOP + i * ROW - LEDGE_Y) / Math.max(1, drop - LEDGE_Y));
+        const target = CLIFF_W - 8 + Math.min(1, depth) * lean;
+        x += (target - x) * 0.4 + (Math.random() - 0.5) * jag;
+        edge.push(x);
+        if (depth > 0.05 && depth < 0.9 && Math.random() < 0.12) {
+          tufts.push([i, 5 + Math.random() * 7]);
+        }
       }
     };
 
     const setupDive = () => {
-      drop = Math.min(1600, drop + 45 + Math.floor(Math.random() * 4) * 30);
+      const leap = Math.random() < 0.25 ? 150 : 0;
+      drop = Math.min(1800, drop + 30 + Math.random() * 70 + leap);
       buildCliff();
       call = rollCall(drop, dive);
       headFirst = Math.abs(call.reduce((a, b) => a + b, 0)) % 1 !== 0;
@@ -241,8 +257,8 @@ import Game from "../../layouts/Game.astro";
     };
 
     const jump = () => {
-      diver.vx = 1 + charge * 1.3;
-      diver.vy = -(3.4 + charge * 4.2);
+      diver.vx = 0.8 + charge * 0.8;
+      diver.vy = -(4.2 + charge * 5);
       phase = "air";
     };
 
@@ -336,7 +352,7 @@ import Game from "../../layouts/Game.astro";
 
       if (phase === "air") {
         diver.spin += spinInput * SPIN_ACCEL;
-        if (!spinInput) diver.spin *= 0.94;
+        if (!spinInput) diver.spin *= 0.9;
         diver.spin = Math.max(-MAX_SPIN, Math.min(MAX_SPIN, diver.spin));
 
         const dir = Math.abs(diver.spin) > 0.03 ? Math.sign(diver.spin) : 0;
@@ -471,25 +487,46 @@ import Game from "../../layouts/Game.astro";
       ctx.fill();
       ctx.globalAlpha = 1;
 
-      ctx.fillStyle = rock.face;
+      const rowY = (i: number) => TOP + i * ROW - camera;
+      const face = ctx.createLinearGradient(0, 0, CLIFF_W + 50, 0);
+      face.addColorStop(0, rock.light);
+      face.addColorStop(0.55, rock.face);
+      face.addColorStop(1, rock.dark);
+      ctx.fillStyle = face;
       ctx.beginPath();
-      ctx.moveTo(0, -240 - camera);
-      edge.forEach((bite, i) => {
-        const y = -240 + i * 40 - camera;
-        ctx.lineTo(CLIFF_W - bite, y);
-        ctx.lineTo(CLIFF_W - bite * 0.4, y + 20);
-      });
-      ctx.lineTo(0, drop + 200 - camera);
+      ctx.moveTo(0, TOP - camera);
+      edge.forEach((x, i) => ctx.lineTo(x, rowY(i)));
+      ctx.lineTo(0, rowY(edge.length - 1));
       ctx.closePath();
       ctx.fill();
 
-      ctx.fillStyle = rock.dark;
-      edge.forEach((bite, i) => {
-        const y = -240 + i * 40 - camera;
-        ctx.fillRect(CLIFF_W - bite - 9, y + 6, 7, 20);
+      ctx.strokeStyle = "rgba(0,0,0,0.16)";
+      ctx.lineWidth = 2;
+      for (let i = 2; i < edge.length; i += 3) {
+        ctx.beginPath();
+        ctx.moveTo(0, rowY(i) + 4);
+        ctx.lineTo(edge[i] - 4, rowY(i) - 3);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = rock.dark;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      edge.forEach((x, i) => (i ? ctx.lineTo(x, rowY(i)) : ctx.moveTo(x, rowY(i))));
+      ctx.stroke();
+
+      ctx.strokeStyle = "#4a6b3a";
+      ctx.lineWidth = 2;
+      tufts.forEach(([i, len]) => {
+        const x = edge[i];
+        const y = rowY(i);
+        if (y < -20 || y > H + 20) return;
+        ctx.beginPath();
+        ctx.moveTo(x - 2, y);
+        ctx.lineTo(x + len * 0.4, y - len);
+        ctx.moveTo(x - 2, y);
+        ctx.lineTo(x + len, y - len * 0.3);
+        ctx.stroke();
       });
-      ctx.fillStyle = rock.light;
-      ctx.fillRect(0, -240 - camera, 12, drop + 440);
 
       ctx.fillStyle = rock.light;
       ctx.beginPath();
