@@ -1,0 +1,468 @@
+---
+import Game from "../../layouts/Game.astro";
+---
+
+<Game
+  name="Dive"
+  tagline="Cliff diving. The judges call the trick, you have one jump to land it."
+  description="Hold to charge, rotate in the air, and hit the water at the right angle. Five dives, one score."
+>
+  <div class="mt-8 flex w-full flex-col items-center" data-game>
+    <div class="w-full max-w-sm">
+      <div class="flex items-baseline justify-between font-mono text-xs">
+        <p data-call class="text-ink dark:text-chalk"></p>
+        <p class="text-ink-soft dark:text-chalk-soft">
+          Dive <span data-round>1</span>/5 &middot; <span data-total>0</span> pts
+        </p>
+      </div>
+
+      <div class="edge relative mt-2 overflow-hidden rounded-2xl border">
+        <canvas
+          data-canvas
+          class="block w-full touch-none"
+          aria-label="Cliff diving game"
+        ></canvas>
+        <p
+          class="pointer-events-none absolute inset-x-0 bottom-0 p-3 text-center font-mono text-xs text-white/90 drop-shadow"
+          data-hud
+          aria-live="polite"
+        ></p>
+      </div>
+
+      <div class="mt-3 grid grid-cols-3 gap-1.5 sm:hidden">
+        <button
+          type="button"
+          data-touch="left"
+          class="edge rounded-lg border py-4 font-mono text-xs"
+          aria-label="Rotate backwards"
+        >
+          &#8630; back
+        </button>
+        <button
+          type="button"
+          data-touch="jump"
+          class="edge rounded-lg border py-4 font-mono text-xs"
+          aria-label="Charge and jump"
+        >
+          hold
+        </button>
+        <button
+          type="button"
+          data-touch="right"
+          class="edge rounded-lg border py-4 font-mono text-xs"
+          aria-label="Rotate forwards"
+        >
+          front &#8631;
+        </button>
+      </div>
+
+      <p class="mt-3 hidden text-center font-mono text-xs text-ink-soft sm:block dark:text-chalk-soft">
+        hold <kbd>space</kbd> to charge &middot; <kbd>&larr;</kbd>
+        <kbd>&rarr;</kbd> to rotate
+      </p>
+
+      <div class="mt-4 hidden text-center" data-summary>
+        <p class="text-lg font-semibold tracking-tight" data-summary-headline></p>
+        <p class="mt-1 text-sm text-ink-soft dark:text-chalk-soft" data-summary-note></p>
+        <button
+          type="button"
+          data-restart
+          class="mt-4 rounded-full bg-accent px-4 py-2 font-mono text-xs text-white transition-opacity hover:opacity-90 dark:bg-accent-dark dark:text-night"
+        >
+          Dive again
+        </button>
+      </div>
+    </div>
+
+    <details class="edge mt-10 w-full max-w-sm rounded-2xl border p-5 text-sm">
+      <summary class="cursor-pointer font-medium">How to play</summary>
+      <div class="mt-3 space-y-3 leading-relaxed text-ink-soft dark:text-chalk-soft">
+        <p>
+          The judges call a trick before every dive &mdash; say{" "}
+          <em>2&frac12; front, head first</em>. Hold to charge your jump, let go, then hold a
+          direction to spin. The counter shows how far round you are while you fall.
+        </p>
+        <p>
+          Stop spinning in time. Half the points are for matching the called rotation, half are
+          for the angle you enter the water at: straight in is silent and clean, sideways is a
+          belly flop. The cliff gets higher every round, so you get more air and they ask for
+          more.
+        </p>
+        <p>Five dives per run.</p>
+      </div>
+    </details>
+  </div>
+</Game>
+
+<script>
+  const TAU = Math.PI * 2;
+  const W = 360;
+  const H = 560;
+  const GRAVITY = 0.34;
+  const MAX_SPIN = 0.24;
+  const BEST_KEY = "dive:best";
+  const ROUNDS = 5;
+
+  type Phase = "ready" | "charging" | "air" | "splash" | "over";
+  interface Trick {
+    flips: number;
+    front: boolean;
+    head: boolean;
+  }
+
+  const root = document.querySelector<HTMLElement>("[data-game]");
+  if (root) {
+    const canvas = root.querySelector<HTMLCanvasElement>("[data-canvas]")!;
+    const ctx = canvas.getContext("2d")!;
+    const hud = root.querySelector<HTMLElement>("[data-hud]")!;
+    const callout = root.querySelector<HTMLElement>("[data-call]")!;
+    const roundLabel = root.querySelector<HTMLElement>("[data-round]")!;
+    const totalLabel = root.querySelector<HTMLElement>("[data-total]")!;
+    const summary = root.querySelector<HTMLElement>("[data-summary]")!;
+    const summaryHeadline = root.querySelector<HTMLElement>("[data-summary-headline]")!;
+    const summaryNote = root.querySelector<HTMLElement>("[data-summary-note]")!;
+    const restart = root.querySelector<HTMLButtonElement>("[data-restart]")!;
+
+    let phase: Phase = "ready";
+    let round = 1;
+    let total = 0;
+    let charge = 0;
+    let holdingJump = false;
+    let spinInput = 0;
+    let drop = 380;
+    let trick: Trick = { flips: 1, front: true, head: true };
+    let splashTimer = 0;
+    let verdict = "";
+    const particles: { x: number; y: number; vx: number; vy: number; life: number }[] = [];
+
+    const diver = { x: 96, y: 0, vx: 0, vy: 0, angle: 0, spin: 0, rotation: 0 };
+
+    const resize = () => {
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = W * ratio;
+      canvas.height = H * ratio;
+      canvas.style.aspectRatio = `${W} / ${H}`;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+
+    const rollTrick = (): Trick => {
+      const pool = round <= 1 ? [1, 1.5] : round <= 3 ? [1, 1.5, 2] : [1.5, 2, 2.5, 3];
+      return {
+        flips: pool[Math.floor(Math.random() * pool.length)],
+        front: Math.random() < 0.6,
+        head: Math.random() < 0.6,
+      };
+    };
+
+    const trickName = (t: Trick) =>
+      `${t.flips % 1 ? `${Math.floor(t.flips)}\u00bd` : t.flips} ${t.front ? "front" : "back"} \u00b7 ${
+        t.head ? "head" : "feet"
+      } first`;
+
+    const setupDive = () => {
+      drop = 340 + round * 70;
+      trick = rollTrick();
+      diver.x = 96;
+      diver.y = 0;
+      diver.vx = 0;
+      diver.vy = 0;
+      diver.angle = 0;
+      diver.spin = 0;
+      diver.rotation = 0;
+      charge = 0;
+      splashTimer = 0;
+      particles.length = 0;
+      phase = "ready";
+      verdict = "";
+      callout.textContent = trickName(trick);
+      roundLabel.textContent = String(round);
+      totalLabel.textContent = String(total);
+    };
+
+    const jump = () => {
+      diver.vx = 1.0 + charge * 1.3;
+      diver.vy = -(3.4 + charge * 4.2);
+      phase = "air";
+    };
+
+    /** Shortest distance between two angles, in radians. */
+    const angleGap = (a: number, b: number) => {
+      const d = Math.abs(((a - b) % TAU) + TAU) % TAU;
+      return Math.min(d, TAU - d);
+    };
+
+    const land = () => {
+      const required = trick.flips * (trick.front ? 1 : -1);
+      const spun = diver.rotation / TAU;
+      const flipError = Math.abs(spun - required);
+      const flipScore = Math.max(0, 1 - flipError / 0.5);
+
+      const entryTarget = trick.head ? Math.PI : 0;
+      const entryError = angleGap(diver.angle, entryTarget);
+      const entryScore = Math.max(0, 1 - entryError / (Math.PI / 2));
+
+      const points = Math.round(
+        120 * (0.5 * flipScore + 0.5 * entryScore) * (1 + round * 0.15),
+      );
+      total += points;
+      totalLabel.textContent = String(total);
+
+      const degrees = Math.round((entryError * 180) / Math.PI);
+      const spunLabel = `${Math.abs(spun).toFixed(2)} ${spun >= 0 ? "front" : "back"}`;
+      verdict =
+        flipScore > 0.85 && entryScore > 0.9
+          ? `Nailed it. ${points} pts`
+          : entryScore < 0.35
+            ? `Belly flop. ${points} pts`
+            : `${spunLabel}, ${degrees}\u00b0 off. ${points} pts`;
+
+      const force = 4 + (1 - entryScore) * 16;
+      for (let i = 0; i < 26; i += 1) {
+        particles.push({
+          x: diver.x,
+          y: drop,
+          vx: (Math.random() - 0.5) * force,
+          vy: -Math.random() * force * 0.9,
+          life: 1,
+        });
+      }
+
+      phase = "splash";
+      splashTimer = 80;
+    };
+
+    const finish = () => {
+      phase = "over";
+      let best = 0;
+      try {
+        best = Number(localStorage.getItem(BEST_KEY) ?? 0);
+        if (total > best) localStorage.setItem(BEST_KEY, String(total));
+      } catch {
+        /* private mode: no best score */
+      }
+      summary.classList.remove("hidden");
+      summaryHeadline.textContent = `${total} points`;
+      summaryNote.textContent =
+        total > best ? "New best." : best ? `Your best is ${best}.` : "Five dives done.";
+    };
+
+    const step = () => {
+      if (phase === "charging") {
+        charge = Math.min(1, charge + 0.022);
+        if (!holdingJump) jump();
+      }
+
+      if (phase === "air") {
+        diver.spin += spinInput * 0.016;
+        if (!spinInput) diver.spin *= 0.99;
+        diver.spin = Math.max(-MAX_SPIN, Math.min(MAX_SPIN, diver.spin));
+        diver.angle = (diver.angle + diver.spin + TAU) % TAU;
+        diver.rotation += diver.spin;
+        diver.vy += GRAVITY;
+        diver.x += diver.vx;
+        diver.y += diver.vy;
+        if (diver.y >= drop) {
+          diver.y = drop;
+          land();
+        }
+      }
+
+      if (phase === "splash") {
+        splashTimer -= 1;
+        particles.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.35;
+          p.life -= 0.016;
+        });
+        if (splashTimer <= 0) {
+          if (round >= ROUNDS) finish();
+          else {
+            round += 1;
+            setupDive();
+          }
+        }
+      }
+    };
+
+    const drawDiver = (camera: number) => {
+      const tuck = Math.min(1, Math.abs(diver.spin) / MAX_SPIN);
+      ctx.save();
+      ctx.translate(diver.x, diver.y - camera);
+      ctx.rotate(diver.angle);
+      ctx.strokeStyle = "#12100e";
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.arc(0, -16, 5, 0, TAU);
+      ctx.fillStyle = "#12100e";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0, -11);
+      ctx.lineTo(0, 6);
+      ctx.stroke();
+      const armY = -6 + tuck * 10;
+      const armX = 9 - tuck * 4;
+      ctx.beginPath();
+      ctx.moveTo(0, -8);
+      ctx.lineTo(-armX, armY);
+      ctx.moveTo(0, -8);
+      ctx.lineTo(armX, armY);
+      ctx.stroke();
+      const legY = 18 - tuck * 12;
+      const legX = 5 + tuck * 3;
+      ctx.beginPath();
+      ctx.moveTo(0, 6);
+      ctx.lineTo(-legX, legY);
+      ctx.moveTo(0, 6);
+      ctx.lineTo(legX, legY);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    const draw = () => {
+      const camera = Math.max(-120, Math.min(diver.y - H * 0.42, drop - H * 0.78));
+      const waterY = drop - camera;
+
+      const sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, "#9ec8e8");
+      sky.addColorStop(1, "#dbe9f2");
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.fillStyle = "#6f8fa5";
+      ctx.beginPath();
+      ctx.moveTo(0, waterY);
+      ctx.lineTo(W * 0.42, waterY - 120);
+      ctx.lineTo(W * 0.68, waterY);
+      ctx.closePath();
+      ctx.globalAlpha = 0.25;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = "#3f3a34";
+      ctx.fillRect(0, -200 - camera, 74, drop + 400);
+      ctx.fillStyle = "#524b43";
+      ctx.fillRect(66, -200 - camera, 8, drop + 400);
+
+      ctx.fillStyle = "#1d3c52";
+      ctx.fillRect(0, waterY, W, H - waterY);
+      ctx.strokeStyle = "rgba(255,255,255,0.45)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let x = 0; x <= W; x += 6) {
+        const y = waterY + Math.sin(x * 0.06 + performance.now() * 0.002) * 2;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      if (phase === "ready" || phase === "charging") {
+        ctx.fillStyle = "rgba(18,16,14,0.15)";
+        ctx.fillRect(84, -18 - camera, 10, 60);
+        ctx.fillStyle = "#d6421c";
+        ctx.fillRect(84, 42 - camera - charge * 60, 10, charge * 60);
+      }
+
+      if (phase !== "over") drawDiver(camera);
+
+      ctx.fillStyle = "rgba(255,255,255,0.8)";
+      particles.forEach((p) => {
+        if (p.life <= 0) return;
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillRect(p.x, p.y - camera, 3, 3);
+      });
+      ctx.globalAlpha = 1;
+
+      if (phase === "air") {
+        const spun = diver.rotation / TAU;
+        hud.textContent = `${Math.abs(spun).toFixed(2)} ${spun >= 0 ? "front" : "back"}`;
+      } else if (phase === "splash" || phase === "over") {
+        hud.textContent = verdict;
+      } else {
+        hud.textContent = "hold to charge";
+      }
+    };
+
+    let last = performance.now();
+    let accumulator = 0;
+    const loop = (now: number) => {
+      accumulator += Math.min(now - last, 100);
+      last = now;
+      while (accumulator >= 1000 / 60) {
+        step();
+        accumulator -= 1000 / 60;
+      }
+      draw();
+      requestAnimationFrame(loop);
+    };
+
+    const press = () => {
+      if (phase === "ready") {
+        holdingJump = true;
+        phase = "charging";
+      }
+    };
+
+    const release = () => {
+      holdingJump = false;
+      if (phase === "charging") jump();
+    };
+
+    window.addEventListener("keydown", (event) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.key === " ") {
+        event.preventDefault();
+        press();
+      } else if (event.key === "ArrowRight" || event.key === "d") spinInput = 1;
+      else if (event.key === "ArrowLeft" || event.key === "a") spinInput = -1;
+    });
+
+    window.addEventListener("keyup", (event) => {
+      if (event.key === " ") release();
+      else if (["ArrowRight", "ArrowLeft", "a", "d"].includes(event.key)) spinInput = 0;
+    });
+
+    canvas.addEventListener("pointerdown", (event) => {
+      canvas.setPointerCapture(event.pointerId);
+      if (phase === "ready" || phase === "charging") press();
+      else if (phase === "air") {
+        const x = event.clientX - canvas.getBoundingClientRect().left;
+        spinInput = x > canvas.clientWidth / 2 ? 1 : -1;
+      }
+    });
+
+    canvas.addEventListener("pointerup", () => {
+      release();
+      spinInput = 0;
+    });
+
+    root.querySelectorAll<HTMLElement>("[data-touch]").forEach((button) => {
+      const action = button.dataset.touch;
+      const down = (event: Event) => {
+        event.preventDefault();
+        if (action === "jump") press();
+        else spinInput = action === "right" ? 1 : -1;
+      };
+      const up = () => {
+        if (action === "jump") release();
+        else spinInput = 0;
+      };
+      button.addEventListener("pointerdown", down);
+      button.addEventListener("pointerup", up);
+      button.addEventListener("pointerleave", up);
+    });
+
+    restart.addEventListener("click", () => {
+      round = 1;
+      total = 0;
+      summary.classList.add("hidden");
+      setupDive();
+    });
+
+    resize();
+    window.addEventListener("resize", resize);
+    setupDive();
+    requestAnimationFrame(loop);
+  }
+</script>

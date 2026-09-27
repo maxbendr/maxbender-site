@@ -19,6 +19,15 @@ export const games: Game[] = [
     session: "3 min",
     status: "live",
   },
+  {
+    slug: "dive",
+    name: "Dive",
+    tagline: "Cliff diving, judged.",
+    blurb:
+      "The judges call the trick before you jump. Two and a half front flips, head first, and the water is coming up fast.",
+    session: "2 min",
+    status: "live",
+  },
 ];
 
 export const liveGames = games.filter((game) => game.status === "live");
