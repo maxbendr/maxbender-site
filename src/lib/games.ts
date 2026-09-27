@@ -28,6 +28,15 @@ export const games: Game[] = [
     session: "2 min",
     status: "live",
   },
+  {
+    slug: "traffic",
+    name: "Traffic",
+    tagline: "One intersection, one button.",
+    blurb:
+      "Switch the lights and keep four queues moving. Drivers lose patience, ambulances lose it faster.",
+    session: "3 min",
+    status: "live",
+  },
 ];
 
 export const liveGames = games.filter((game) => game.status === "live");
