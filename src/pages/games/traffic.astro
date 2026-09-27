@@ -12,7 +12,7 @@ import Game from "../../layouts/Game.astro";
       <div class="font-mono text-xs">
         <p data-status class="text-sm text-ink dark:text-chalk"></p>
         <p class="mt-1 text-ink-soft dark:text-chalk-soft">
-          <span data-score>0</span> through &middot; <span data-combo>x1</span> &middot;{" "}
+          <span data-score>0</span> pts &middot; <span data-combo>x1</span> &middot;{" "}
           <span data-lives></span>
         </p>
       </div>
@@ -63,10 +63,10 @@ import Game from "../../layouts/Game.astro";
           short amber and an all-red gap in between &mdash; so switching is never free.
         </p>
         <p>
-          Every car that clears the junction is a point. Cars waiting at a red lose patience,
-          shown as the bar shrinking under them. When a driver runs out, they give up and you
-          lose one of three lives. Ambulances lose patience three times as fast and pay ten
-          times as much.
+          Every car that clears the junction pays a point, multiplied by your streak. Cars
+          waiting at a red lose patience, shown as the bar shrinking under them. When a driver
+          runs out they turn around and leave, costing you one of three lives. Ambulances lose
+          patience three times as fast and pay ten times as much.
         </p>
         <p>
           Clear cars without anyone turning red-hot and the multiplier climbs. Traffic keeps
@@ -90,7 +90,7 @@ import Game from "../../layouts/Game.astro";
   const TOP_SPEED = 1.9;
   const LIVES = 3;
   const AMBER = 40;
-  const ALL_RED = 46;
+  const ALL_RED = 34;
   const MIN_GREEN = 70;
   const BEST_KEY = "traffic:best";
   const COLORS = ["#d8604b", "#e0a13c", "#3f7fb5", "#4d9a6a", "#8a6bbf", "#c9c4bb"];
@@ -108,6 +108,10 @@ import Game from "../../layouts/Game.astro";
     color: string;
     siren: boolean;
     scored: boolean;
+    /** Past the stop line on a green, so it finishes crossing whatever the lights do. */
+    committed: boolean;
+    /** Fed up and leaving the queue. */
+    quit: boolean;
   }
 
   const AXIS: Record<Dir, Phase> = { n: "ns", s: "ns", e: "ew", w: "ew" };
@@ -154,6 +158,7 @@ import Game from "../../layouts/Game.astro";
     let frames = 0;
     let running = false;
     let flash = 0;
+    let lastSignal = "";
     const spawnIn: Record<Dir, number> = { n: 40, s: 90, e: 150, w: 220 };
 
     const resize = () => {
@@ -227,6 +232,8 @@ import Game from "../../layouts/Game.astro";
         color: siren ? "#f2f2f2" : COLORS[Math.floor(Math.random() * COLORS.length)],
         siren,
         scored: false,
+        committed: false,
+        quit: false,
       });
       return true;
     };
@@ -235,12 +242,13 @@ import Game from "../../layouts/Game.astro";
       lives -= 1;
       combo = 1;
       cleared = 0;
+      car.quit = true;
       hud.textContent = car.siren ? "The ambulance gave up." : "A driver gave up on you.";
       if (lives <= 0) {
         running = false;
         const best = Math.max(score, Number(localStorage.getItem(BEST_KEY) ?? 0));
         localStorage.setItem(BEST_KEY, String(best));
-        summaryHeadline.textContent = `${score} cars through`;
+        summaryHeadline.textContent = `${score} points`;
         summaryNote.textContent =
           best > score ? `Your best shift is ${best}.` : "That is your best shift yet.";
         summary.classList.remove("hidden");
@@ -275,21 +283,22 @@ import Game from "../../layouts/Game.astro";
         queue.forEach((car, index) => {
           const ahead = queue[index - 1];
           let limit = ahead ? ahead.t - SPACING : Infinity;
-          // Amber still lets you go if you are already too close to stop safely.
-          const mustStop = light === "red" || (light === "amber" && car.t < STOP_T[dir] - 26);
-          if (mustStop && car.t <= STOP_T[dir]) limit = Math.min(limit, STOP_T[dir]);
+          if (!car.committed) {
+            const line = STOP_T[dir];
+            if (light === "green" && car.t >= line - 0.5) car.committed = true;
+            else limit = Math.min(limit, line);
+          }
 
           const room = limit - car.t;
-          const target = room > 60 ? TOP_SPEED : Math.max(0, Math.min(TOP_SPEED, room / 26));
+          const target =
+            room > 60 ? TOP_SPEED : Math.max(0, Math.min(TOP_SPEED, (room - 1) / 24));
           car.speed += (target - car.speed) * 0.18;
-          car.t += car.speed;
+          if (car.speed < 0.05) car.speed = 0;
+          car.t = Math.min(car.t + car.speed, limit);
 
-          if (car.speed < 0.25) {
+          if (car.speed < 0.25 && !car.quit) {
             car.patience -= (car.siren ? 3 : 1) / 900;
-            if (car.patience <= 0) {
-              car.patience = 1;
-              loseLife(car);
-            }
+            if (car.patience <= 0) loseLife(car);
           }
 
           if (!car.scored && car.t > STOP_T[dir] + STOP * 2) {
@@ -303,7 +312,13 @@ import Game from "../../layouts/Game.astro";
         });
       });
 
-      cars = cars.filter((car) => car.t < 520);
+      cars = cars.filter((car) => car.t < 520 && !car.quit);
+
+      const signal = `${phase}${amber > 0 ? "a" : allRed > 0 ? "r" : "g"}`;
+      if (signal !== lastSignal) {
+        lastSignal = signal;
+        setStatus();
+      }
     };
 
     const drawRoad = () => {
