@@ -102,11 +102,11 @@ import Game from "../../layouts/Game.astro";
   const TAU = Math.PI * 2;
   const W = 360;
   const H = 560;
-  const GRAVITY = 0.24;
-  const MAX_SPIN = 0.3;
-  const SPIN_ACCEL = 0.022;
+  const GRAVITY = 0.17;
+  const MAX_SPIN = 0.17;
+  const SPIN_ACCEL = 0.013;
   const ROW = 32;
-  const TOP = -560;
+  const TOP = -760;
   const BEST_KEY = "dive:best";
   const LIVES = 3;
   const STEPS = [0.5, 1, 1.5, 2, 2.5, 3];
@@ -354,7 +354,7 @@ import Game from "../../layouts/Game.astro";
 
       if (phase === "air") {
         diver.spin += spinInput * SPIN_ACCEL;
-        if (!spinInput) diver.spin *= 0.9;
+        if (!spinInput) diver.spin *= 0.88;
         diver.spin = Math.max(-MAX_SPIN, Math.min(MAX_SPIN, diver.spin));
 
         const dir = Math.abs(diver.spin) > 0.03 ? Math.sign(diver.spin) : 0;
@@ -458,7 +458,7 @@ import Game from "../../layouts/Game.astro";
     };
 
     const draw = () => {
-      const camera = Math.max(-460, Math.min(diver.y - H * 0.42, drop - H * 0.78));
+      const camera = Math.max(-560, Math.min(diver.y - H * 0.42, drop - H * 0.78));
       const waterY = drop - camera;
       const now = performance.now();
 
