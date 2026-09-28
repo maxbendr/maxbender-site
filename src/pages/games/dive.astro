@@ -1,0 +1,697 @@
+---
+import Game from "../../layouts/Game.astro";
+---
+
+<Game
+  name="Dive"
+  tagline="Cliff diving. The judges call the trick, you have one jump to land it."
+  description="Hold to charge, flip and reverse in the air, and hit the water clean. The cliff keeps rising until you run out of dives."
+>
+  <div class="mt-8 flex w-full flex-col items-center" data-game>
+    <div class="w-full max-w-sm">
+      <div class="font-mono text-xs">
+        <p data-call class="text-sm text-ink dark:text-chalk"></p>
+        <p class="mt-1 text-ink-soft dark:text-chalk-soft">
+          <span data-round>1</span> &middot; <span data-height></span> &middot;{" "}
+          <span data-total>0</span> pts &middot; <span data-lives></span>
+        </p>
+      </div>
+
+      <div class="edge relative mt-2 overflow-hidden rounded-2xl border">
+        <canvas
+          data-canvas
+          class="block w-full touch-none"
+          aria-label="Cliff diving game"
+        ></canvas>
+        <p
+          class="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent p-3 pt-6 text-center font-mono text-xs text-white"
+          data-hud
+          aria-live="polite"
+        ></p>
+      </div>
+
+      <div class="mt-3 grid grid-cols-3 gap-1.5 sm:hidden">
+        <button
+          type="button"
+          data-touch="left"
+          class="edge rounded-lg border py-4 font-mono text-xs"
+          aria-label="Rotate backwards"
+        >
+          &#8630; back
+        </button>
+        <button
+          type="button"
+          data-touch="jump"
+          class="edge rounded-lg border py-4 font-mono text-xs"
+          aria-label="Charge and jump"
+        >
+          hold
+        </button>
+        <button
+          type="button"
+          data-touch="right"
+          class="edge rounded-lg border py-4 font-mono text-xs"
+          aria-label="Rotate forwards"
+        >
+          front &#8631;
+        </button>
+      </div>
+
+      <p class="mt-3 hidden text-center font-mono text-xs text-ink-soft sm:block dark:text-chalk-soft">
+        hold <kbd>space</kbd> to charge &middot; <kbd>&larr;</kbd>
+        <kbd>&rarr;</kbd> to rotate
+      </p>
+
+      <div class="mt-4 hidden text-center" data-summary>
+        <p class="text-lg font-semibold tracking-tight" data-summary-headline></p>
+        <p class="mt-1 text-sm text-ink-soft dark:text-chalk-soft" data-summary-note></p>
+        <button
+          type="button"
+          data-restart
+          class="mt-4 rounded-full bg-accent px-4 py-2 font-mono text-xs text-white transition-opacity hover:opacity-90 dark:bg-accent-dark dark:text-night"
+        >
+          Dive again
+        </button>
+      </div>
+    </div>
+
+    <details class="edge mt-10 w-full max-w-sm rounded-2xl border p-5 text-sm">
+      <summary class="cursor-pointer font-medium">How to play</summary>
+      <div class="mt-3 space-y-3 leading-relaxed text-ink-soft dark:text-chalk-soft">
+        <p>
+          The judges call a trick before every dive &mdash; say{" "}
+          <em>2 front &rarr; &frac12; back</em>. Hold to charge your jump, let go, then hold a
+          direction to spin. Reverse the direction mid-air to start the next part of the combo.
+        </p>
+        <p>
+          Half the somersaults decide how you land: whole numbers put you feet first, halves put
+          you head first. Most of the score is hitting the called rotation, the rest is how
+          straight you are when you touch the water. Sideways is a belly flop, and three flops
+          ends the run.
+        </p>
+        <p>
+          Every dive is from a higher cliff than the last, so there is more air and the calls
+          get longer. Clean dives in a row build a multiplier.
+        </p>
+      </div>
+    </details>
+  </div>
+</Game>
+
+<script>
+  const TAU = Math.PI * 2;
+  const W = 360;
+  const H = 560;
+  const GRAVITY = 0.17;
+  const MAX_SPIN = 0.17;
+  const SPIN_ACCEL = 0.013;
+  const ROW = 32;
+  const TOP = -760;
+  const BEST_KEY = "dive:best";
+  const LIVES = 3;
+  const STEPS = [0.5, 1, 1.5, 2, 2.5, 3];
+  const LEDGE_Y = 30;
+  const STAND_Y = LEDGE_Y - 38;
+  const CLIFF_W = 74;
+  const ROCKS = [
+    { face: "#4a443c", light: "#5d564c", dark: "#332f29" },
+    { face: "#6b4a38", light: "#825b44", dark: "#4a3225" },
+    { face: "#3b3a44", light: "#4c4b57", dark: "#28272f" },
+  ];
+
+  type Phase = "ready" | "charging" | "air" | "splash" | "over";
+
+  const root = document.querySelector<HTMLElement>("[data-game]");
+  if (root) {
+    const canvas = root.querySelector<HTMLCanvasElement>("[data-canvas]")!;
+    const ctx = canvas.getContext("2d")!;
+    const hud = root.querySelector<HTMLElement>("[data-hud]")!;
+    const callout = root.querySelector<HTMLElement>("[data-call]")!;
+    const roundLabel = root.querySelector<HTMLElement>("[data-round]")!;
+    const totalLabel = root.querySelector<HTMLElement>("[data-total]")!;
+    const livesLabel = root.querySelector<HTMLElement>("[data-lives]")!;
+    const heightLabel = root.querySelector<HTMLElement>("[data-height]")!;
+    const summary = root.querySelector<HTMLElement>("[data-summary]")!;
+    const summaryHeadline = root.querySelector<HTMLElement>("[data-summary-headline]")!;
+    const summaryNote = root.querySelector<HTMLElement>("[data-summary-note]")!;
+    const restart = root.querySelector<HTMLButtonElement>("[data-restart]")!;
+
+    let phase: Phase = "ready";
+    let dive = 1;
+    let total = 0;
+    let lives = LIVES;
+    let streak = 0;
+    let charge = 0;
+    let holdingJump = false;
+    let spinInput = 0;
+    const FIRST_DROP = 335;
+    let drop = FIRST_DROP;
+    /** Called trick as signed turns per segment; positive is front. */
+    let call: number[] = [1];
+    let headFirst = false;
+    let splashTimer = 0;
+    let verdict = "";
+    let rock = ROCKS[0];
+    /** Right-hand outline of the cliff, one x per ROW pixels of rock. */
+    let edge: number[] = [];
+    /** Tufts growing out of the face, as [row, length] pairs. */
+    let tufts: [number, number][] = [];
+
+    const particles: { x: number; y: number; vx: number; vy: number; life: number }[] = [];
+    const diver = { x: 96, y: 0, vx: 0, vy: 0, angle: 0, spin: 0, rotation: 0 };
+
+    /** Turns completed so far, split at each change of spin direction. */
+    let done: number[] = [];
+    let segmentStart = 0;
+    let segmentDir = 0;
+
+    const resize = () => {
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = W * ratio;
+      canvas.height = H * ratio;
+      canvas.style.aspectRatio = `${W} / ${H}`;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+
+    /** Frames of air time for a medium-charge jump off a cliff this high. */
+    const airFrames = (height: number) => {
+      const v0 = 6.7;
+      return (v0 + Math.sqrt(v0 * v0 + 2 * GRAVITY * height)) / GRAVITY;
+    };
+
+    const rollCall = (height: number, index: number) => {
+      let budget = Math.min(((airFrames(height) - 20) * MAX_SPIN) / TAU, 1.5 + index * 0.5);
+      const maxSegments = index < 3 ? 1 : index < 7 ? 2 : 3;
+      const segments: number[] = [];
+      let dir = Math.random() < 0.6 ? 1 : -1;
+
+      while (segments.length < maxSegments) {
+        const options = STEPS.filter((turns) => turns <= budget);
+        if (!options.length) break;
+        const pick = options[Math.floor(Math.random() * options.length)];
+        segments.push(pick * dir);
+        budget -= pick + 0.4;
+        dir *= -1;
+        if (segments.length && Math.random() < 0.3) break;
+      }
+
+      return segments.length ? segments : [0.5 * dir];
+    };
+
+    const turnsLabel = (turns: number) => {
+      const whole = Math.floor(turns);
+      if (turns % 1 === 0) return String(turns);
+      return whole ? `${whole}\u00bd` : "\u00bd";
+    };
+
+    const callLabel = (segments: number[], head: boolean) =>
+      `${segments
+        .map((s) => `${turnsLabel(Math.abs(s))} ${s > 0 ? "front" : "back"}`)
+        .join(" \u2192 ")}, ${head ? "head" : "feet"} first`;
+
+    const buildCliff = () => {
+      rock = ROCKS[Math.floor(Math.random() * ROCKS.length)];
+      edge = [];
+      tufts = [];
+      const rows = Math.ceil((drop + 440 - TOP) / ROW);
+      const lean = 18 + Math.random() * 26;
+      const jag = 4 + Math.random() * 7;
+      let x = CLIFF_W - 6;
+      for (let i = 0; i < rows; i += 1) {
+        const depth = Math.max(0, (TOP + i * ROW - LEDGE_Y) / Math.max(1, drop - LEDGE_Y));
+        const target = CLIFF_W - 8 + Math.min(1, depth) * lean;
+        x += (target - x) * 0.4 + (Math.random() - 0.5) * jag;
+        edge.push(x);
+        if (depth > 0.05 && depth < 0.9 && Math.random() < 0.12) {
+          tufts.push([i, 5 + Math.random() * 7]);
+        }
+      }
+    };
+
+    const setupDive = () => {
+      const leap = Math.random() < 0.25 ? 150 : 0;
+      drop = Math.min(2600, drop + 30 + Math.random() * 70 + leap);
+      buildCliff();
+      call = rollCall(drop, dive);
+      headFirst = Math.abs(call.reduce((a, b) => a + b, 0)) % 1 !== 0;
+      diver.x = 96;
+      diver.y = STAND_Y;
+      diver.vx = 0;
+      diver.vy = 0;
+      diver.angle = 0;
+      diver.spin = 0;
+      diver.rotation = 0;
+      done = [];
+      heightLabel.textContent = `${Math.round((drop - STAND_Y) / 10)}m`;
+      segmentStart = 0;
+      segmentDir = 0;
+      charge = 0;
+      splashTimer = 0;
+      spinInput = 0;
+      phase = "ready";
+      verdict = "";
+      callout.textContent = callLabel(call, headFirst);
+      roundLabel.textContent = `dive ${dive}`;
+      totalLabel.textContent = String(total);
+      livesLabel.textContent = "\u2665".repeat(lives).padEnd(LIVES, "\u00b7");
+    };
+
+    const jump = () => {
+      const v0 = 4.2 + charge * 5;
+      const frames = (v0 + Math.sqrt(v0 * v0 + 2 * GRAVITY * (drop - diver.y))) / GRAVITY;
+      diver.vx = (70 + charge * 120) / frames;
+      diver.vy = -v0;
+      phase = "air";
+    };
+
+    /** Shortest distance between two angles, in radians. */
+    const angleGap = (a: number, b: number) => {
+      const d = Math.abs(((a - b) % TAU) + TAU) % TAU;
+      return Math.min(d, TAU - d);
+    };
+
+    const closeSegment = () => {
+      const turns = (diver.rotation - segmentStart) / TAU;
+      if (Math.abs(turns) >= 0.12) done.push(turns);
+      segmentStart = diver.rotation;
+    };
+
+    const land = () => {
+      closeSegment();
+
+      let error = 0;
+      for (let i = 0; i < Math.max(call.length, done.length); i += 1) {
+        error += Math.abs((call[i] ?? 0) - (done[i] ?? 0));
+      }
+      const flipScore = Math.max(0, 1 - error / 0.8);
+
+      const entryError = angleGap(diver.angle, headFirst ? Math.PI : 0);
+      const entryScore = Math.max(0, 1 - entryError / (Math.PI / 2));
+
+      const quality = 0.6 * flipScore + 0.4 * entryScore;
+      const flop = quality < 0.3;
+      if (flop) {
+        lives -= 1;
+        streak = 0;
+      } else if (quality > 0.7) {
+        streak += 1;
+      } else {
+        streak = 0;
+      }
+
+      const multiplier = 1 + Math.min(streak, 5) * 0.2;
+      const points = Math.round(100 * quality * (1 + drop / 700) * multiplier);
+      total += points;
+      totalLabel.textContent = String(total);
+      livesLabel.textContent = "\u2665".repeat(Math.max(0, lives)).padEnd(LIVES, "\u00b7");
+
+      const degrees = Math.round((entryError * 180) / Math.PI);
+      const spun = callLabel(
+        done.length ? done.map((t) => Math.round(t * 2) / 2) : [0],
+        headFirst,
+      ).replace(/,.*$/, "");
+      verdict = flop
+        ? `Flop. ${points} pts`
+        : flipScore > 0.85 && entryScore > 0.9
+          ? `Nailed it${multiplier > 1 ? ` \u00d7${multiplier.toFixed(1)}` : ""}. ${points} pts`
+          : `${spun}, ${degrees}\u00b0 off. ${points} pts`;
+
+      const force = 4 + (1 - entryScore) * 16;
+      for (let i = 0; i < 30; i += 1) {
+        particles.push({
+          x: diver.x,
+          y: drop,
+          vx: (Math.random() - 0.5) * force,
+          vy: -Math.random() * force * 0.9,
+          life: 1,
+        });
+      }
+
+      phase = "splash";
+      splashTimer = 80;
+    };
+
+    const finish = () => {
+      phase = "over";
+      let best = 0;
+      try {
+        best = Number(localStorage.getItem(BEST_KEY) ?? 0);
+        if (total > best) localStorage.setItem(BEST_KEY, String(total));
+      } catch {
+        /* private mode: no best score */
+      }
+      summary.classList.remove("hidden");
+      summaryHeadline.textContent = `${total} points`;
+      summaryNote.textContent =
+        total > best ? `New best, over ${dive} dives.` : `${dive} dives. Your best is ${best}.`;
+    };
+
+    const step = () => {
+      if (phase === "charging") {
+        charge = Math.min(1, charge + 0.022);
+        if (!holdingJump) jump();
+      }
+
+      if (phase === "air") {
+        diver.spin += spinInput * SPIN_ACCEL;
+        if (!spinInput) diver.spin *= 0.88;
+        diver.spin = Math.max(-MAX_SPIN, Math.min(MAX_SPIN, diver.spin));
+
+        const dir = Math.abs(diver.spin) > 0.03 ? Math.sign(diver.spin) : 0;
+        if (dir && dir !== segmentDir) {
+          if (segmentDir) closeSegment();
+          else segmentStart = diver.rotation;
+          segmentDir = dir;
+        }
+
+        diver.angle = (diver.angle + diver.spin + TAU) % TAU;
+        diver.rotation += diver.spin;
+        diver.vy += GRAVITY;
+        diver.x += diver.vx;
+        diver.y += diver.vy;
+        if (diver.y >= drop) {
+          diver.y = drop;
+          land();
+        }
+      }
+
+      if (phase === "splash") {
+        splashTimer -= 1;
+        particles.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.35;
+          p.life -= 0.016;
+        });
+        if (splashTimer <= 0) {
+          if (lives <= 0) finish();
+          else {
+            dive += 1;
+            particles.length = 0;
+            setupDive();
+          }
+        }
+      }
+    };
+
+    const limb = (ax: number, ay: number, bx: number, by: number, cx: number, cy: number) => {
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.lineTo(cx, cy);
+      ctx.stroke();
+    };
+
+    const mix = (a: number, b: number, t: number) => a + (b - a) * t;
+
+    /** Seen from the side, so rotation reads as a somersault rather than a cartwheel. */
+    const drawDiver = (camera: number) => {
+      const grounded = phase === "ready" || phase === "charging";
+      const tuck = phase === "air" ? Math.min(1, Math.abs(diver.spin) / MAX_SPIN) : 0;
+      const crouch = phase === "charging" ? charge : 0;
+
+      ctx.save();
+      ctx.translate(diver.x, diver.y - camera);
+      if (!grounded) ctx.rotate(diver.angle);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      const hipY = grounded ? 6 + crouch * 11 : 6;
+      const shoulderY = hipY - 14;
+      const headY = hipY - 23;
+
+      const arm = grounded
+        ? [-4 - crouch * 6, shoulderY + 7, -6 - crouch * 11, shoulderY + 15 - crouch * 18]
+        : [mix(1, 11, tuck), mix(-22, 1, tuck), mix(2, 9, tuck), mix(-35, 11, tuck)];
+      const leg = grounded
+        ? [5 + crouch * 7, hipY + 15, 1, LEDGE_Y - diver.y]
+        : [mix(0, 13, tuck), mix(22, 1, tuck), mix(0, 4, tuck), mix(38, 12, tuck)];
+
+      const figure = (color: string, offsetX: number, width: number) => {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        limb(offsetX, shoulderY, arm[0] + offsetX, arm[1], arm[2] + offsetX, arm[3]);
+        limb(offsetX, hipY, leg[0] + offsetX, leg[1], leg[2] + offsetX, leg[3]);
+      };
+
+      figure("#5b544c", -3, 2.5);
+
+      ctx.strokeStyle = "#12100e";
+      ctx.fillStyle = "#12100e";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, shoulderY);
+      ctx.lineTo(0, hipY);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(1.5, headY, 5.5, 0, TAU);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(0.5, headY + 5);
+      ctx.lineTo(0, shoulderY);
+      ctx.stroke();
+      figure("#12100e", 0, 3);
+
+      ctx.fillStyle = "#d6421c";
+      ctx.fillRect(-3.5, hipY - 4, 8, 6);
+      ctx.restore();
+    };
+
+    const draw = () => {
+      const camera = Math.max(-560, Math.min(diver.y - H * 0.42, drop - H * 0.78));
+      const waterY = drop - camera;
+      const now = performance.now();
+
+      const sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, "#8fc0e4");
+      sky.addColorStop(1, "#e2edf3");
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.fillStyle = "rgba(255,255,255,0.75)";
+      for (let i = 0; i < 3; i += 1) {
+        const cy = ((i * 220 - camera * 0.25) % (H + 160)) - 80;
+        const cx = 120 + i * 90;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 18, 0, TAU);
+        ctx.arc(cx + 20, cy + 4, 13, 0, TAU);
+        ctx.arc(cx - 20, cy + 5, 11, 0, TAU);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = "#6f8fa5";
+      ctx.globalAlpha = 0.25;
+      ctx.beginPath();
+      ctx.moveTo(60, waterY);
+      ctx.lineTo(W * 0.5, waterY - 130);
+      ctx.lineTo(W * 0.78, waterY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      const rowY = (i: number) => TOP + i * ROW - camera;
+      const face = ctx.createLinearGradient(0, 0, CLIFF_W + 50, 0);
+      face.addColorStop(0, rock.light);
+      face.addColorStop(0.55, rock.face);
+      face.addColorStop(1, rock.dark);
+      ctx.fillStyle = face;
+      ctx.beginPath();
+      ctx.moveTo(0, TOP - camera);
+      edge.forEach((x, i) => ctx.lineTo(x, rowY(i)));
+      ctx.lineTo(0, rowY(edge.length - 1));
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(0,0,0,0.16)";
+      ctx.lineWidth = 2;
+      for (let i = 2; i < edge.length; i += 3) {
+        ctx.beginPath();
+        ctx.moveTo(0, rowY(i) + 4);
+        ctx.lineTo(edge[i] - 4, rowY(i) - 3);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = rock.dark;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      edge.forEach((x, i) => (i ? ctx.lineTo(x, rowY(i)) : ctx.moveTo(x, rowY(i))));
+      ctx.stroke();
+
+      ctx.strokeStyle = "#4a6b3a";
+      ctx.lineWidth = 2;
+      tufts.forEach(([i, len]) => {
+        const x = edge[i];
+        const y = rowY(i);
+        if (y < -20 || y > H + 20) return;
+        ctx.beginPath();
+        ctx.moveTo(x - 2, y);
+        ctx.lineTo(x + len * 0.4, y - len);
+        ctx.moveTo(x - 2, y);
+        ctx.lineTo(x + len, y - len * 0.3);
+        ctx.stroke();
+      });
+
+      ctx.fillStyle = rock.light;
+      ctx.beginPath();
+      ctx.moveTo(CLIFF_W - 14, LEDGE_Y - camera - 8);
+      ctx.lineTo(120, LEDGE_Y - camera - 6);
+      ctx.lineTo(124, LEDGE_Y - camera);
+      ctx.lineTo(CLIFF_W - 14, LEDGE_Y - camera + 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = rock.dark;
+      ctx.beginPath();
+      ctx.moveTo(CLIFF_W - 14, LEDGE_Y - camera + 6);
+      ctx.lineTo(124, LEDGE_Y - camera);
+      ctx.lineTo(112, LEDGE_Y - camera + 22);
+      ctx.lineTo(CLIFF_W - 14, LEDGE_Y - camera + 30);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = "#1d3c52";
+      ctx.fillRect(0, waterY, W, H - waterY);
+      ctx.strokeStyle = "rgba(255,255,255,0.4)";
+      ctx.lineWidth = 2;
+      for (let row = 0; row < 3; row += 1) {
+        ctx.beginPath();
+        for (let x = 0; x <= W; x += 6) {
+          const y = waterY + row * 16 + Math.sin(x * 0.06 + row + now * 0.002) * 2;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      if (phase === "ready" || phase === "charging") {
+        ctx.fillStyle = "rgba(18,16,14,0.15)";
+        ctx.fillRect(130, LEDGE_Y - 60 - camera, 10, 60);
+        ctx.fillStyle = "#d6421c";
+        ctx.fillRect(130, LEDGE_Y - camera - charge * 60, 10, charge * 60);
+      }
+
+      if (phase !== "over") drawDiver(camera);
+
+      ctx.fillStyle = "rgba(255,255,255,0.8)";
+      particles.forEach((p) => {
+        if (p.life <= 0) return;
+        ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillRect(p.x, p.y - camera, 3, 3);
+      });
+      ctx.globalAlpha = 1;
+
+      ctx.font = "600 13px ui-monospace, monospace";
+      ctx.fillStyle = "rgba(18,16,14,0.55)";
+      ctx.fillText(`${Math.round((drop - STAND_Y) / 10)} m`, W - 52, 24);
+      ctx.fillStyle = "rgba(18,16,14,0.3)";
+      ctx.fillRect(W - 52, 32, 40, 1);
+
+      if (phase === "air") {
+        const live = [...done, (diver.rotation - segmentStart) / TAU].filter(
+          (t) => Math.abs(t) >= 0.12,
+        );
+        hud.textContent = live.length
+          ? live
+              .map((t) => `${Math.abs(t).toFixed(1)} ${t > 0 ? "front" : "back"}`)
+              .join(" \u2192 ")
+          : "spin";
+      } else if (phase === "splash" || phase === "over") {
+        hud.textContent = verdict;
+      } else {
+        hud.textContent = "hold to charge";
+      }
+    };
+
+    let last = performance.now();
+    let accumulator = 0;
+    const loop = (now: number) => {
+      accumulator += Math.min(now - last, 100);
+      last = now;
+      while (accumulator >= 1000 / 60) {
+        step();
+        accumulator -= 1000 / 60;
+      }
+      draw();
+      requestAnimationFrame(loop);
+    };
+
+    const press = () => {
+      if (phase === "ready") {
+        holdingJump = true;
+        phase = "charging";
+      }
+    };
+
+    const release = () => {
+      holdingJump = false;
+      if (phase === "charging") jump();
+    };
+
+    const typing = (target: EventTarget | null) =>
+      target instanceof HTMLElement &&
+      (target.isContentEditable ||
+        ["INPUT", "TEXTAREA", "SELECT", "BUTTON", "A", "SUMMARY"].includes(target.tagName));
+
+    window.addEventListener("keydown", (event) => {
+      if (event.metaKey || event.ctrlKey || event.altKey || typing(event.target)) return;
+      if (event.key === " ") {
+        event.preventDefault();
+        press();
+      } else if (event.key === "ArrowRight" || event.key === "d") spinInput = 1;
+      else if (event.key === "ArrowLeft" || event.key === "a") spinInput = -1;
+    });
+
+    window.addEventListener("keyup", (event) => {
+      if (typing(event.target)) return;
+      if (event.key === " ") release();
+      else if (["ArrowRight", "ArrowLeft", "a", "d"].includes(event.key)) spinInput = 0;
+    });
+
+    canvas.addEventListener("pointerdown", (event) => {
+      canvas.setPointerCapture(event.pointerId);
+      if (phase === "ready" || phase === "charging") press();
+      else if (phase === "air") {
+        const x = event.clientX - canvas.getBoundingClientRect().left;
+        spinInput = x > canvas.clientWidth / 2 ? 1 : -1;
+      }
+    });
+
+    const endPointer = () => {
+      release();
+      spinInput = 0;
+    };
+    canvas.addEventListener("pointerup", endPointer);
+    canvas.addEventListener("pointercancel", endPointer);
+
+    root.querySelectorAll<HTMLElement>("[data-touch]").forEach((button) => {
+      const action = button.dataset.touch;
+      const down = (event: Event) => {
+        event.preventDefault();
+        if (action === "jump") press();
+        else spinInput = action === "right" ? 1 : -1;
+      };
+      const up = () => {
+        if (action === "jump") release();
+        else spinInput = 0;
+      };
+      button.addEventListener("pointerdown", down);
+      button.addEventListener("pointerup", up);
+      button.addEventListener("pointerleave", up);
+      button.addEventListener("pointercancel", up);
+    });
+
+    restart.addEventListener("click", () => {
+      dive = 1;
+      total = 0;
+      lives = LIVES;
+      drop = FIRST_DROP;
+      streak = 0;
+      particles.length = 0;
+      summary.classList.add("hidden");
+      setupDive();
+    });
+
+    resize();
+    window.addEventListener("resize", resize);
+    setupDive();
+    requestAnimationFrame(loop);
+  }
+</script>
