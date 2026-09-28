@@ -1,0 +1,55 @@
+---
+import Base from "../../layouts/Base.astro";
+import { games } from "../../lib/games";
+import { site } from "../../lib/content";
+---
+
+<Base
+  title={`Games - ${site.name}`}
+  description="Small browser games. No accounts, no ads, nothing to install."
+>
+  <div class="mx-auto max-w-3xl px-6 py-16 sm:py-24">
+    <div class="reveal is-visible">
+      <p class="accent font-mono text-xs uppercase tracking-[0.2em]">Games</p>
+      <h1 class="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">Small games.</h1>
+      <p class="mt-4 max-w-xl text-lg leading-relaxed text-ink-soft dark:text-chalk-soft">
+        Classics with one thing changed. They run entirely in your browser, so there is no
+        account, no ads, and nothing to install.
+      </p>
+    </div>
+
+    <ul class="mt-14 space-y-3">
+      {games.map((game) => (
+        <li class="reveal">
+          <a
+            href={game.status === "live" ? `/games/${game.slug}` : "#"}
+            aria-disabled={game.status === "live" ? undefined : "true"}
+            class:list={[
+              "edge group flex items-start justify-between gap-6 rounded-2xl border p-5 transition-colors sm:p-6",
+              game.status === "live"
+                ? "hover:border-accent dark:hover:border-accent-dark"
+                : "pointer-events-none opacity-55",
+            ]}
+          >
+            <div>
+              <div class="flex items-center gap-3">
+                <h2 class="text-lg font-semibold tracking-tight">{game.name}</h2>
+                <span class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-soft dark:text-chalk-soft">
+                  {game.status === "live" ? game.session : "soon"}
+                </span>
+              </div>
+              <p class="mt-1 text-sm text-ink-soft dark:text-chalk-soft">{game.tagline}</p>
+              <p class="mt-3 max-w-md text-sm leading-relaxed">{game.blurb}</p>
+            </div>
+            <span
+              aria-hidden="true"
+              class="mt-1 font-mono text-sm text-ink-soft transition-transform group-hover:translate-x-1 dark:text-chalk-soft"
+            >
+              &rarr;
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Base>
