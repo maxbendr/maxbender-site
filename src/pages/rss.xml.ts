@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 
-import { getPosts, site } from "../lib/content";
+import { getPosts, postHref, site } from "../lib/content";
 
 function escapeXml(value: string): string {
   return value
@@ -15,15 +15,17 @@ export const GET: APIRoute = async ({ site: astroSite }) => {
   const posts = await getPosts();
 
   const items = posts
-    .map(
-      (post) => `    <item>
+    .map((post) => {
+      const href = postHref(post);
+      const url = href.startsWith("http") ? href : `${origin}${href}`;
+      return `    <item>
       <title>${escapeXml(post.data.title)}</title>
-      <link>${origin}/writing/${post.id}/</link>
-      <guid>${origin}/writing/${post.id}/</guid>
+      <link>${url}</link>
+      <guid>${url}</guid>
       <pubDate>${post.data.date.toUTCString()}</pubDate>
       <description>${escapeXml(post.data.subtitle || post.data.title)}</description>
-    </item>`,
-    )
+    </item>`;
+    })
     .join("\n");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

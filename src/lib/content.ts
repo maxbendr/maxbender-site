@@ -1,7 +1,6 @@
 import { getCollection } from "astro:content";
 
 import backgroundData from "../../content/background.json";
-import likesData from "../../content/likes.json";
 import mentoringData from "../../content/mentoring.json";
 import siteData from "../../content/site.json";
 import travelData from "../../content/travel.json";
@@ -14,17 +13,17 @@ export interface SiteContent {
   subline: string;
   description: string;
   email: string;
-  cvUrl: string;
   headshot: string;
   headshotAlt: string;
   ogImage: string;
-  links: { linkedin: string; github: string };
+  links: { linkedin: string; github: string; substack: string };
   contact: { note: string; formEndpoint: string };
   analytics: { provider: "none" | "plausible" | "vercel"; plausibleDomain: string };
 }
 
 export interface WritingContent {
   intro: string;
+  substackNote: string;
   posts: { title: string; summary: string; url: string; date: string }[];
 }
 
@@ -52,11 +51,6 @@ export interface TravelContent {
   places: Place[];
 }
 
-export interface LikesContent {
-  intro: string;
-  items: { title: string; body: string }[];
-}
-
 export interface MentoringContent {
   label: string;
   title: string;
@@ -71,7 +65,6 @@ export const site = siteData as SiteContent;
 export const writing = writingData as WritingContent;
 export const background = backgroundData as BackgroundContent;
 export const travel = travelData as TravelContent;
-export const likes = likesData as LikesContent;
 export const mentoring = mentoringData as MentoringContent;
 
 /** Newest first, drafts dropped from the production build. */
@@ -81,6 +74,11 @@ export async function getPosts() {
     ({ data }) => import.meta.env.DEV || !data.draft,
   );
   return entries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+}
+
+/** Posts with an `external` URL live on Substack, the rest get a page here. */
+export function postHref(post: { id: string; data: { external: string } }): string {
+  return post.data.external || `/writing/${post.id}/`;
 }
 
 const postDateFormat = new Intl.DateTimeFormat("en-US", {
@@ -112,6 +110,5 @@ export const sections = [
   { id: "writing", label: "Writing" },
   { id: "travel", label: "Travel" },
   { id: "background", label: "Background" },
-  { id: "likes", label: "What I like" },
   { id: "contact", label: "Contact" },
 ] as const;

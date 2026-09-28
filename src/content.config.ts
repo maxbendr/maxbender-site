@@ -23,15 +23,6 @@ const projects = defineCollection({
   }),
 });
 
-const buildlog = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./content/buildlog" }),
-  schema: z.object({
-    title: z.string(),
-    date: z.coerce.date(),
-    project: z.string().optional(),
-  }),
-});
-
 const posts = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./content/posts" }),
   schema: z.object({
@@ -42,6 +33,8 @@ const posts = defineCollection({
     coverAlt: z.string().default(""),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
+    /** Set to a Substack URL to list the article here but send readers there. */
+    external: z.string().default(""),
   }),
 });
 
@@ -54,4 +47,4 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { work, projects, buildlog, posts, pages };
+export const collections = { work, projects, posts, pages };

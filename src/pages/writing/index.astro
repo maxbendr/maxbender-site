@@ -1,6 +1,13 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { formatPostDate, getPosts, readingTime, site, writing } from "../../lib/content";
+import {
+  formatPostDate,
+  getPosts,
+  postHref,
+  readingTime,
+  site,
+  writing,
+} from "../../lib/content";
 
 const posts = await getPosts();
 ---
@@ -29,11 +36,22 @@ const posts = await getPosts();
     <ul class="mt-14">
       {posts.map((post, index) => (
         <li class="reveal edge border-t" style={`transition-delay:${index * 50}ms`}>
-          <a href={`/writing/${post.id}/`} class="group block py-8">
+          <a
+            href={postHref(post)}
+            target={post.data.external ? "_blank" : undefined}
+            rel={post.data.external ? "noopener" : undefined}
+            class="group block py-8"
+          >
             <p class="font-mono text-xs text-ink-soft dark:text-chalk-soft">
               {formatPostDate(post.data.date)}
-              <span class="mx-2">/</span>
-              {readingTime(post.body ?? "")}
+              {post.data.external ? (
+                <span class="ml-2 accent">Substack</span>
+              ) : (
+                <>
+                  <span class="mx-2">/</span>
+                  {readingTime(post.body ?? "")}
+                </>
+              )}
               {post.data.draft && <span class="ml-2 accent">draft</span>}
             </p>
             <h2 class="mt-2 text-2xl font-semibold tracking-tight transition-colors group-hover:text-accent dark:group-hover:text-accent-dark">
@@ -59,12 +77,12 @@ const posts = await getPosts();
         <p class="mt-2 text-ink-soft dark:text-chalk-soft">{writing.intro}</p>
       </div>
       <a
-        href={site.links.linkedin}
+        href={site.links.substack || site.links.linkedin}
         target="_blank"
-        rel="me noopener"
+        rel={site.links.substack ? "noopener" : "me noopener"}
         class="shrink-0 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-transform duration-200 hover:-translate-y-0.5 dark:bg-accent-dark dark:text-night"
       >
-        Follow me on LinkedIn
+        {site.links.substack ? "Subscribe on Substack" : "Follow me on LinkedIn"}
       </a>
     </div>
   </div>

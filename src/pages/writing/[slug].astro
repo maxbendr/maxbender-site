@@ -6,7 +6,7 @@ import Base from "../../layouts/Base.astro";
 import { formatPostDate, getPosts, readingTime, site } from "../../lib/content";
 
 export const getStaticPaths = (async () => {
-  const posts = await getPosts();
+  const posts = (await getPosts()).filter((post) => !post.data.external);
   return posts.map((post, index) => ({
     params: { slug: post.id },
     props: {

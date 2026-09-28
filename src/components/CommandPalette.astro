@@ -1,5 +1,5 @@
 ---
-import { getPosts, site } from "../lib/content";
+import { getPosts, postHref, site } from "../lib/content";
 
 interface Props {
   sections: { id: string; label: string }[];
@@ -19,11 +19,13 @@ const commands = [
   ...posts.map((post) => ({
     label: post.data.title,
     hint: "Post",
-    href: `/writing/${post.id}/`,
+    href: postHref(post),
   })),
   { label: "Now", hint: "Page", href: "/now" },
   { label: "LinkedIn", hint: "External", href: site.links.linkedin },
-  { label: "Download CV", hint: "File", href: site.cvUrl },
+  ...(site.links.substack
+    ? [{ label: "Substack", hint: "External", href: site.links.substack }]
+    : []),
   { label: "Toggle dark mode", hint: "Action", href: "#theme" },
 ];
 ---

@@ -23,19 +23,17 @@ Node 22.12 or newer.
 Everything below is plain markdown or JSON. Change a file, commit, and Vercel
 rebuilds. Anything marked `[PLACEHOLDER]` still needs real content.
 
-| File                      | What it controls                                                                                |
-| ------------------------- | ----------------------------------------------------------------------------------------------- |
-| `content/site.json`       | Name, positioning line, subline, email, CV path, social links, contact form endpoint, analytics |
-| `content/work/*.md`       | The "What I do" cards. One file per card, `order` sets the position                             |
-| `content/projects/*.md`   | The "Building" cards. Name, tagline, stack, link, screenshot path                               |
-| `content/buildlog/*.md`   | The build log feed. One file per update, sorted by `date`                                       |
-| `content/posts/*.md`      | Articles. One file per article, filename is the URL slug                                        |
-| `content/writing.json`    | LinkedIn posts: title, one line summary, url, date                                              |
-| `content/travel.json`     | Map pins: city, country, lat, lng, note, optional url                                           |
-| `content/background.json` | The timeline on the Background section                                                          |
-| `content/likes.json`      | The "What I like" items                                                                         |
-| `content/mentoring.json`  | The Mentoring section: copy, photo path and the three cards                                     |
-| `content/now.md`          | The `/now` page                                                                                 |
+| File                      | What it controls                                                                                            |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `content/site.json`       | Name, positioning line, subline, email, social links (LinkedIn, Substack), contact form endpoint, analytics |
+| `content/work/*.md`       | The "What I do" cards. One file per card, `order` sets the position                                         |
+| `content/projects/*.md`   | The "Building" cards. Name, tagline, stack, link, screenshot path                                           |
+| `content/posts/*.md`      | Articles. One file per article, filename is the URL slug                                                    |
+| `content/writing.json`    | Writing intro plus optional LinkedIn posts: title, one line summary, url, date                              |
+| `content/travel.json`     | Map pins: city, country, lat, lng, note, optional url                                                       |
+| `content/background.json` | The timeline on the Background section                                                                      |
+| `content/mentoring.json`  | The Mentoring section: copy, photo path and the three cards                                                 |
+| `content/now.md`          | The `/now` page                                                                                             |
 
 Adding a card or a log entry means adding a file. Removing one means deleting
 the file. No code changes needed.
@@ -55,6 +53,7 @@ coverAlt: Description of the cover image # optional
 tags: # optional
   - open innovation
 draft: false # true keeps it out of the production build
+external: "" # a Substack URL lists the post here and sends readers there
 ---
 
 Your article in plain Markdown. Headings, lists, quotes, links and images all
@@ -64,7 +63,18 @@ have styles already.
 The article shows up at `/writing/`, the newest three appear in the Writing
 section on the home page, every article is in the command palette, and
 `/rss.xml` updates itself. Reading time is calculated from the word count.
-Two example articles ship with the repo, delete them when you write your own.
+
+### Using Substack instead
+
+Two ways, they work together:
+
+1. Put your Substack URL in `links.substack` in `content/site.json`. A
+   "Subscribe on Substack" button appears in the Writing section, on `/writing/`,
+   in the footer and in the command palette.
+2. For each Substack article, add a short Markdown file in `content/posts/`
+   with `title`, `date`, `subtitle` and `external: https://yourname.substack.com/p/slug`.
+   It is listed with everything else but the link goes to Substack, so the site
+   stays the index of your writing wherever it is hosted.
 
 ### Images and files
 
@@ -76,7 +86,6 @@ Drop files in `public/`:
 - `public/images/projects/<project>.png` for project screenshots, matching the
   `screenshot` path in the project's markdown file. If the file is missing, the
   card shows a placeholder tile instead of a broken image
-- `public/max-bender-cv.pdf` for the CV download
 - `public/og.png` is generated by `npm run og`
 
 ### Contact form
@@ -112,7 +121,7 @@ Both options are cookie free, so no cookie banner is needed.
 
 ```
 content/            all editable text
-public/             images, CV, favicon, og image
+public/             images, favicon, og image
 src/components/     one component per section
 src/layouts/        page shell, head tags, theme script
 src/pages/          index, now, 404

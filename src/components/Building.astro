@@ -19,16 +19,6 @@ const projects = await Promise.all(
   }),
 );
 
-const log = (await getCollection("buildlog")).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
-);
-
-const dateFormat = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-});
-
 const linkReady = (link: string) => link !== "" && !link.includes("[PLACEHOLDER");
 ---
 
@@ -96,35 +86,7 @@ const linkReady = (link: string) => link !== "" && !link.includes("[PLACEHOLDER"
     ))}
   </div>
 
-  <div class="mt-20">
-    <h3 class="reveal font-mono text-xs uppercase tracking-[0.2em] accent">Build log</h3>
-    <p class="reveal mt-3 max-w-xl text-ink-soft dark:text-chalk-soft">
-      Short updates from whatever I am building. One markdown file per entry.
-    </p>
-    <ol class="mt-8">
-      {log.map(async (entry) => {
-        const { Content } = await render(entry);
-        return (
-          <li class="reveal edge grid gap-2 border-t py-6 sm:grid-cols-[9rem_1fr] sm:gap-8">
-            <p class="font-mono text-sm text-ink-soft dark:text-chalk-soft">
-              {dateFormat.format(entry.data.date)}
-            </p>
-            <div>
-              <h4 class="font-medium tracking-tight">
-                {entry.data.title}
-                {entry.data.project && (
-                  <span class="ml-2 font-mono text-[11px] uppercase tracking-[0.15em] accent">
-                    {entry.data.project}
-                  </span>
-                )}
-              </h4>
-              <div class="mt-1 text-sm text-ink-soft dark:text-chalk-soft">
-                <Content />
-              </div>
-            </div>
-          </li>
-        );
-      })}
-    </ol>
-  </div>
+  <p class="reveal mt-10 font-mono text-xs text-ink-soft dark:text-chalk-soft">
+    More coming. One Markdown file per project in content/projects.
+  </p>
 </Section>
