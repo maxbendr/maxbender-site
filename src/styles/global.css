@@ -15,7 +15,7 @@
   --color-night-soft: #171513;
   --color-chalk: #f4f2ef;
   --color-chalk-soft: #a49e96;
-  --color-accent: #d6421c;
+  --color-accent: #b53410;
   --color-accent-dark: #ff6a3d;
 }
 
@@ -90,6 +90,67 @@ body {
 
 .prose-custom a {
   @apply underline underline-offset-4;
+}
+
+.prose-article {
+  @apply text-lg leading-relaxed text-ink-soft dark:text-chalk-soft;
+}
+
+.prose-article > * + * {
+  @apply mt-6;
+}
+
+.prose-article h2 {
+  @apply mt-12 text-2xl font-semibold tracking-tight text-ink dark:text-chalk;
+}
+
+.prose-article h3 {
+  @apply mt-10 text-lg font-semibold tracking-tight text-ink dark:text-chalk;
+}
+
+.prose-article ul {
+  @apply list-disc space-y-2 pl-6;
+}
+
+.prose-article ol {
+  @apply list-decimal space-y-2 pl-6;
+}
+
+.prose-article blockquote {
+  @apply border-l-2 pl-5 italic;
+  border-color: var(--color-accent);
+}
+
+.dark .prose-article blockquote {
+  border-color: var(--color-accent-dark);
+}
+
+.prose-article a {
+  @apply text-ink underline underline-offset-4 dark:text-chalk;
+  text-decoration-color: var(--color-accent);
+}
+
+.prose-article img {
+  @apply w-full rounded-2xl border;
+  border-color: var(--edge);
+}
+
+.prose-article hr {
+  @apply my-12 border-t;
+  border-color: var(--edge);
+}
+
+.prose-article code {
+  @apply rounded bg-paper-soft px-1.5 py-0.5 font-mono text-[0.85em] dark:bg-night-soft;
+}
+
+.prose-article pre {
+  @apply overflow-x-auto rounded-2xl border p-5 text-sm;
+  border-color: var(--edge);
+}
+
+.prose-article pre code {
+  @apply bg-transparent p-0;
 }
 
 /* Entrance animation, applied only when the element scrolls into view. */

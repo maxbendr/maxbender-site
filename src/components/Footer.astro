@@ -13,8 +13,16 @@ const year = new Date().getFullYear();
       <a class="link-underline" href={site.links.linkedin} rel="me noopener" target="_blank">
         LinkedIn
       </a>
-      <a class="link-underline" href={site.links.spotify} rel="noopener" target="_blank">
-        Spotify
+      {site.links.substack && (
+        <a class="link-underline" href={site.links.substack} rel="noopener" target="_blank">
+          Substack
+        </a>
+      )}
+      <a class="link-underline" href="/writing/">
+        Writing
+      </a>
+      <a class="link-underline" href="/rss.xml">
+        RSS
       </a>
       <a class="link-underline" href="/now">
         Now

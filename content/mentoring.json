@@ -1,0 +1,22 @@
+{
+  "label": "Mentoring",
+  "title": "I mentor founders for accelerators and startup programs.",
+  "intro": "Most weeks I end up in a room with founders who are three months from running out of patience or money. I am useful in that room: go to market, corporate sales, fundraising narrative, and the unglamorous question of what to cut.",
+  "image": "/images/mentoring.jpg",
+  "imageAlt": "Max Bender running a session with founders around a table",
+  "items": [
+    {
+      "title": "Accelerator mentoring",
+      "body": "Office hours and review sessions for cohorts, usually pre-seed to Series A."
+    },
+    {
+      "title": "Selection and jury",
+      "body": "Screening applications and sitting on selection panels without wasting anyone's afternoon."
+    },
+    {
+      "title": "Workshops",
+      "body": "Working sessions on corporate sales, pilots and how to not die inside a procurement process."
+    }
+  ],
+  "cta": "If you run a program and need a mentor, email me."
+}

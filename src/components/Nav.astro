@@ -25,7 +25,7 @@ const { sections } = Astro.props;
     </a>
 
     <div class="flex items-center gap-1 sm:gap-3">
-      <div class="hidden items-center gap-5 text-sm text-ink-soft md:flex dark:text-chalk-soft">
+      <div class="hidden items-center gap-4 text-sm text-ink-soft lg:flex dark:text-chalk-soft">
         {sections.map((section) => (
           <a
             href={`/#${section.id}`}
@@ -48,10 +48,9 @@ const { sections } = Astro.props;
         type="button"
         data-palette-open
         class="edge inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-xs text-ink-soft transition-colors hover:border-accent hover:text-accent dark:text-chalk-soft dark:hover:border-accent-dark dark:hover:text-accent-dark"
-        aria-label="Open command palette"
+        aria-label="Open command palette, Ctrl K"
       >
-        <span aria-hidden="true">Ctrl</span>
-        <span aria-hidden="true">K</span>
+        <span>Ctrl K</span>
       </button>
       <ThemeToggle />
     </div>

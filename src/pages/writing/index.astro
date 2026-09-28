@@ -1,0 +1,89 @@
+---
+import Base from "../../layouts/Base.astro";
+import {
+  formatPostDate,
+  getPosts,
+  postHref,
+  readingTime,
+  site,
+  writing,
+} from "../../lib/content";
+
+const posts = await getPosts();
+---
+
+<Base
+  title={`Writing - ${site.name}`}
+  description="Essays on open innovation, corporate startup programs and building with AI."
+>
+  <div class="mx-auto max-w-3xl px-6 py-16 sm:py-24">
+    <header class="reveal is-visible">
+      <p class="font-mono text-xs uppercase tracking-[0.2em] accent">Writing</p>
+      <h1 class="mt-5 text-4xl font-semibold tracking-tight sm:text-5xl">
+        Notes I put in order.
+      </h1>
+      <p class="mt-4 text-lg text-ink-soft dark:text-chalk-soft">
+        Longer thinking on open innovation, corporate startup programs and what I break while
+        building with AI. Short thoughts stay on LinkedIn.
+      </p>
+      <p class="mt-4 font-mono text-xs text-ink-soft dark:text-chalk-soft">
+        <a class="link-underline" href="/rss.xml">
+          RSS
+        </a>
+      </p>
+    </header>
+
+    <ul class="mt-14">
+      {posts.map((post, index) => (
+        <li class="reveal edge border-t" style={`transition-delay:${index * 50}ms`}>
+          <a
+            href={postHref(post)}
+            target={post.data.external ? "_blank" : undefined}
+            rel={post.data.external ? "noopener" : undefined}
+            class="group block py-8"
+          >
+            <p class="font-mono text-xs text-ink-soft dark:text-chalk-soft">
+              {formatPostDate(post.data.date)}
+              {post.data.external ? (
+                <span class="ml-2 accent">Substack</span>
+              ) : (
+                <>
+                  <span class="mx-2">/</span>
+                  {readingTime(post.body ?? "")}
+                </>
+              )}
+              {post.data.draft && <span class="ml-2 accent">draft</span>}
+            </p>
+            <h2 class="mt-2 text-2xl font-semibold tracking-tight transition-colors group-hover:text-accent dark:group-hover:text-accent-dark">
+              {post.data.title}
+            </h2>
+            {post.data.subtitle && (
+              <p class="mt-2 text-ink-soft dark:text-chalk-soft">{post.data.subtitle}</p>
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {posts.length === 0 && (
+      <p class="reveal mt-14 text-ink-soft dark:text-chalk-soft">
+        Nothing published yet. Add a Markdown file in content/posts.
+      </p>
+    )}
+
+    <div class="reveal edge mt-16 flex flex-col items-start gap-5 rounded-2xl border p-8 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-xl font-semibold tracking-tight">Shorter thoughts, more often.</p>
+        <p class="mt-2 text-ink-soft dark:text-chalk-soft">{writing.intro}</p>
+      </div>
+      <a
+        href={site.links.substack || site.links.linkedin}
+        target="_blank"
+        rel={site.links.substack ? "noopener" : "me noopener"}
+        class="shrink-0 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-transform duration-200 hover:-translate-y-0.5 dark:bg-accent-dark dark:text-night"
+      >
+        {site.links.substack ? "Subscribe on Substack" : "Follow me on LinkedIn"}
+      </a>
+    </div>
+  </div>
+</Base>
