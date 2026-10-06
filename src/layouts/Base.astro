@@ -1,6 +1,7 @@
 ---
 import "@fontsource-variable/inter";
 import "../styles/global.css";
+import Ambient from "../components/Ambient.astro";
 import Analytics from "../components/Analytics.astro";
 import CommandPalette from "../components/CommandPalette.astro";
 import Footer from "../components/Footer.astro";
@@ -88,6 +89,7 @@ const ogImage = new URL(site.ogImage, Astro.site ?? site.siteUrl).href;
     >
       Skip to content
     </a>
+    <Ambient />
     <Nav sections={navSections} />
     <main id="main">
       <slot />

@@ -1,0 +1,203 @@
+---
+import orbit from "../../content/orbit.json";
+import { site } from "../lib/content";
+
+const players = orbit.players;
+const positions = players.map((_, i) => {
+  const angle = (i / players.length) * Math.PI * 2 - Math.PI / 2;
+  return `left: ${(50 + Math.cos(angle) * 50).toFixed(2)}%; top: ${(50 + Math.sin(angle) * 50).toFixed(2)}%`;
+});
+---
+
+<section
+  id="orbit"
+  class="relative mx-auto max-w-5xl scroll-mt-24 px-6 py-24 sm:py-32"
+  data-orbit
+>
+  <div class="reveal grid gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-16">
+    <div class="orbit-stage mx-auto" aria-hidden="true">
+      <div class="orbit-ring edge"></div>
+      <div class="orbit-spin">
+        {players.map((player, i) => (
+          <button
+            type="button"
+            class="orbit-node"
+            style={positions[i]}
+            data-orbit-node={i}
+            aria-pressed={i === 0 ? "true" : "false"}
+            tabindex="-1"
+          >
+            {player.label}
+          </button>
+        ))}
+      </div>
+      <div class="orbit-center edge">
+        <img
+          src={site.headshot}
+          alt=""
+          width="160"
+          height="160"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+
+    <div>
+      <p class="font-mono text-xs uppercase tracking-[0.2em] accent">{orbit.title}</p>
+      <h2 class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{orbit.intro}</h2>
+
+      <div class="mt-8 flex flex-wrap gap-2" role="tablist" aria-label="Who I work with">
+        {players.map((player, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`orbit-tab-${i}`}
+            aria-selected={i === 0 ? "true" : "false"}
+            aria-controls="orbit-panel"
+            class="orbit-chip edge rounded-full border px-4 py-1.5 text-sm transition-colors hover:border-accent hover:text-accent dark:hover:border-accent-dark dark:hover:text-accent-dark"
+            data-orbit-tab={i}
+          >
+            {player.label}
+          </button>
+        ))}
+      </div>
+
+      <div
+        id="orbit-panel"
+        role="tabpanel"
+        aria-labelledby="orbit-tab-0"
+        class="mt-6 min-h-[6rem] text-lg leading-relaxed text-ink-soft dark:text-chalk-soft"
+        data-orbit-panel
+      >
+        {players.map((player, i) => (
+          <p data-orbit-note={i} hidden={i !== 0}>
+            {player.note}
+          </p>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .orbit-stage {
+    --size: min(80vw, 26rem);
+    position: relative;
+    width: var(--size);
+    height: var(--size);
+  }
+
+  .orbit-ring {
+    position: absolute;
+    inset: 0;
+    border: 1px dashed;
+    border-radius: 50%;
+    opacity: 0.8;
+  }
+
+  .orbit-spin {
+    position: absolute;
+    inset: 0;
+    animation: orbit-turn 60s linear infinite;
+  }
+
+  .orbit-stage:hover .orbit-spin,
+  .orbit-stage:hover .orbit-node {
+    animation-play-state: paused;
+  }
+
+  .orbit-node {
+    position: absolute;
+    translate: -50% -50%;
+    white-space: nowrap;
+    border: 1px solid var(--edge);
+    border-radius: 9999px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    transition:
+      border-color 0.2s,
+      color 0.2s,
+      scale 0.3s;
+    animation: orbit-turn 60s linear infinite reverse;
+  }
+
+  :global(.dark) .orbit-node {
+    background: var(--color-night);
+    color: var(--color-chalk);
+  }
+
+  .orbit-node[aria-pressed="true"] {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    scale: 1.08;
+  }
+
+  :global(.dark) .orbit-node[aria-pressed="true"] {
+    border-color: var(--color-accent-dark);
+    color: var(--color-accent-dark);
+  }
+
+  .orbit-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 38%;
+    height: 38%;
+    translate: -50% -50%;
+    overflow: hidden;
+    border: 1px solid;
+    border-radius: 50%;
+  }
+
+  .orbit-center img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+
+  .orbit-chip[aria-selected="true"] {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  :global(.dark) .orbit-chip[aria-selected="true"] {
+    border-color: var(--color-accent-dark);
+    color: var(--color-accent-dark);
+  }
+
+  @keyframes orbit-turn {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-orbit]");
+  if (root) {
+    const nodes = root.querySelectorAll<HTMLButtonElement>("[data-orbit-node]");
+    const tabs = root.querySelectorAll<HTMLButtonElement>("[data-orbit-tab]");
+    const notes = root.querySelectorAll<HTMLElement>("[data-orbit-note]");
+    const panel = root.querySelector<HTMLElement>("[data-orbit-panel]");
+
+    const select = (index: number) => {
+      nodes.forEach((n) =>
+        n.setAttribute("aria-pressed", String(n.dataset.orbitNode === String(index))),
+      );
+      tabs.forEach((t) =>
+        t.setAttribute("aria-selected", String(t.dataset.orbitTab === String(index))),
+      );
+      notes.forEach((n) => (n.hidden = n.dataset.orbitNote !== String(index)));
+      panel?.setAttribute("aria-labelledby", `orbit-tab-${index}`);
+    };
+
+    nodes.forEach((n) =>
+      n.addEventListener("click", () => select(Number(n.dataset.orbitNode))),
+    );
+    tabs.forEach((t) => t.addEventListener("click", () => select(Number(t.dataset.orbitTab))));
+  }
+</script>

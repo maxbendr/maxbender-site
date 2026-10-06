@@ -1,0 +1,30 @@
+{
+  "title": "Who I work with",
+  "intro": "Innovation only works when the whole ecosystem shows up. This is the circle I spend my weeks in.",
+  "players": [
+    {
+      "label": "Startups",
+      "note": "I scout them, coach them and get them in front of the right people. Mostly I say no, which is how the yes stays valuable."
+    },
+    {
+      "label": "Corporates",
+      "note": "I help innovation teams turn a vague mandate into a program with a problem statement, a shortlist and a decision at the end."
+    },
+    {
+      "label": "Investors",
+      "note": "Deal flow, co-investment and honest feedback loops between VCs and the corporates piloting the same startups."
+    },
+    {
+      "label": "Governments",
+      "note": "Ecosystem assessments and program design for public agencies that want more companies, not more conferences."
+    },
+    {
+      "label": "Accelerators",
+      "note": "Mentoring founders, running workshops and designing the parts of a program that actually move the companies."
+    },
+    {
+      "label": "Builders",
+      "note": "The AI and vibe coding crowd. I build my own small tools and trade notes with people who ship on weekends."
+    }
+  ]
+}

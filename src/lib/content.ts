@@ -109,9 +109,8 @@ export function obfuscateEmail(email: string): { user: string; domain: string } 
 
 export const sections = [
   { id: "work", label: "What I do" },
+  { id: "orbit", label: "Who I work with" },
   { id: "mentoring", label: "Mentoring" },
-  { id: "building", label: "Building" },
-  { id: "writing", label: "Writing" },
   { id: "travel", label: "Travel" },
   { id: "background", label: "Background" },
   { id: "contact", label: "Contact" },

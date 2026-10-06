@@ -25,6 +25,7 @@ rebuilds. Anything marked `[PLACEHOLDER]` still needs real content.
 
 | File                      | What it controls                                                                                                                                              |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content/orbit.json`      | "Who I work with" circle: title, intro and the players around the portrait, each with a short note                                                            |
 | `content/site.json`       | Name, positioning line, `hero` headline (text and inline image segments), subline, email, social links (LinkedIn, Substack), contact form endpoint, analytics |
 | `content/work/*.md`       | The "What I do" cards. One file per card, `order` sets the position                                                                                           |
 | `content/projects/*.md`   | The "Building" cards. Name, tagline, stack, link, screenshot path                                                                                             |
