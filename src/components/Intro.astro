@@ -1,0 +1,93 @@
+---
+import { site } from "../lib/content";
+
+const greetings = site.greetings;
+---
+
+{greetings.length > 0 && (
+  <div
+    id="intro"
+    class="fixed inset-0 z-[60] flex items-center justify-center bg-night text-chalk"
+    aria-hidden="true"
+    data-greetings={JSON.stringify(greetings)}
+  >
+    <p class="intro-word flex items-center gap-4 text-4xl font-medium tracking-tight sm:text-6xl">
+      <span class="intro-dot inline-block size-2.5 rounded-full bg-chalk sm:size-3" />
+      <span class="intro-text">{greetings[0]}</span>
+    </p>
+    <svg
+      class="intro-curve pointer-events-none absolute left-0 top-full w-full"
+      viewBox="0 0 100 10"
+      preserveAspectRatio="none"
+    >
+      <path d="M0 0 L100 0 L100 0 Q50 10 0 0 Z" fill="currentColor" />
+    </svg>
+  </div>
+)}
+
+<style>
+  #intro {
+    color: var(--color-night);
+    transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+  }
+  #intro .intro-word {
+    color: var(--color-chalk);
+    transition: opacity 0.5s ease;
+  }
+  #intro .intro-curve {
+    height: clamp(60px, 12vw, 160px);
+    transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+    transform-origin: top;
+  }
+  #intro.is-leaving {
+    transform: translateY(-100%);
+  }
+  #intro.is-leaving .intro-word {
+    opacity: 0;
+  }
+  #intro.is-leaving .intro-curve {
+    transform: scaleY(0);
+  }
+  html.intro-active {
+    overflow: hidden;
+  }
+</style>
+
+<script>
+  const intro = document.getElementById("intro");
+
+  if (intro) {
+    const KEY = "intro-seen";
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const seen = sessionStorage.getItem(KEY) === "1";
+
+    if (seen || reduceMotion) {
+      intro.remove();
+    } else {
+      const words: string[] = JSON.parse(intro.dataset.greetings ?? "[]");
+      const text = intro.querySelector<HTMLElement>(".intro-text");
+      const root = document.documentElement;
+      root.classList.add("intro-active");
+      sessionStorage.setItem(KEY, "1");
+
+      const leave = () => {
+        intro.classList.add("is-leaving");
+        root.classList.remove("intro-active");
+        intro.addEventListener("transitionend", () => intro.remove(), { once: true });
+        setTimeout(() => intro.remove(), 1200);
+      };
+
+      let i = 0;
+      const next = () => {
+        i += 1;
+        if (i >= words.length) {
+          setTimeout(leave, 400);
+          return;
+        }
+        if (text) text.textContent = words[i];
+        setTimeout(next, 170);
+      };
+      setTimeout(next, 900);
+    }
+  }
+</script>

@@ -3,6 +3,7 @@ import Background from "../components/Background.astro";
 import Building from "../components/Building.astro";
 import Contact from "../components/Contact.astro";
 import Hero from "../components/Hero.astro";
+import Intro from "../components/Intro.astro";
 import Mentoring from "../components/Mentoring.astro";
 import Travel from "../components/Travel.astro";
 import WhatIDo from "../components/WhatIDo.astro";
@@ -12,6 +13,7 @@ import { sections } from "../lib/content";
 ---
 
 <Base navSections={[...sections]}>
+  <Intro />
   <Hero />
   <WhatIDo />
   <Mentoring />

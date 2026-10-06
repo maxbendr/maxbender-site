@@ -8,6 +8,20 @@
   "headshot": "/images/max-portrait.jpg",
   "headshotAlt": "Max Bender speaking on stage",
   "ogImage": "/og.png",
+  "greetings": [
+    "Hello",
+    "Hallo",
+    "Hola",
+    "Bonjour",
+    "Ciao",
+    "Olá",
+    "Hallo",
+    "Hej",
+    "Cześć",
+    "Γεια σου",
+    "مرحبا",
+    "你好"
+  ],
   "links": {
     "linkedin": "https://www.linkedin.com/in/[PLACEHOLDER]",
     "github": "https://github.com/[PLACEHOLDER]",

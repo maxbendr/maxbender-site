@@ -16,6 +16,8 @@ export interface SiteContent {
   headshot: string;
   headshotAlt: string;
   ogImage: string;
+  /** Intro greetings, shown once per visit on the home page. Empty array disables it. */
+  greetings: string[];
   links: { linkedin: string; github: string; substack: string };
   contact: { note: string; formEndpoint: string };
   analytics: { provider: "none" | "plausible" | "vercel"; plausibleDomain: string };
