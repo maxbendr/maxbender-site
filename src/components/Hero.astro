@@ -10,7 +10,7 @@ const email = obfuscateEmail(site.email);
 
   <div class="relative mx-auto flex min-h-[calc(100svh-4rem)] max-w-6xl flex-col justify-center px-6 py-20 sm:py-28">
     <h1
-      class="hero-title max-w-[18ch] text-[clamp(2.6rem,9.5vw,7rem)] font-semibold uppercase leading-[1.02] tracking-tight"
+      class="hero-title max-w-[18ch] text-[clamp(2.1rem,9.5vw,7rem)] font-semibold uppercase leading-[1.02] tracking-tight"
       data-hero-title
     >
       {site.hero.map((seg, i) =>
@@ -19,7 +19,12 @@ const email = obfuscateEmail(site.email);
             {seg.text} {seg.break && <br />}
           </span>
         ) : (
-          <span class="hero-pic" data-hero-pic data-depth={((i % 3) + 1) * 6}>
+          <span
+            class="hero-pic"
+            data-hero-pic
+            data-depth={((i % 3) + 1) * 6}
+            aria-hidden="true"
+          >
             <img
               src={seg.image}
               alt={seg.alt}
@@ -158,9 +163,9 @@ const email = obfuscateEmail(site.email);
   const title = hero?.querySelector<HTMLElement>("[data-hero-title]");
   const pics = Array.from(hero?.querySelectorAll<HTMLElement>("[data-hero-pic]") ?? []);
   const fine = window.matchMedia("(pointer: fine)").matches;
-  const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const still = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-  if (hero && title && fine && !still) {
+  if (hero && title && fine) {
     const apply = (nx: number, ny: number) => {
       title.style.setProperty("--tx", `${nx * 6}px`);
       title.style.setProperty("--ty", `${ny * 6}px`);
@@ -171,6 +176,7 @@ const email = obfuscateEmail(site.email);
       });
     };
     hero.addEventListener("pointermove", (e) => {
+      if (still.matches) return;
       const r = hero.getBoundingClientRect();
       apply(
         ((e.clientX - r.left) / r.width - 0.5) * 2,
