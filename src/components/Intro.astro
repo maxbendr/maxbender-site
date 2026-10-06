@@ -25,6 +25,16 @@ const greetings = site.greetings;
   </div>
 )}
 
+<script is:inline>
+  (() => {
+    const intro = document.getElementById("intro");
+    const skip =
+      sessionStorage.getItem("intro-seen") === "1" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (intro && skip) intro.remove();
+  })();
+</script>
+
 <style>
   #intro {
     color: var(--color-night);
