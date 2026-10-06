@@ -25,12 +25,22 @@ const greetings = site.greetings;
   </div>
 )}
 
+<noscript>
+  <style>
+    #intro {
+      display: none;
+    }
+  </style>
+</noscript>
+
 <script is:inline>
   (() => {
     const intro = document.getElementById("intro");
-    const skip =
-      sessionStorage.getItem("intro-seen") === "1" ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem("intro-seen") === "1";
+    } catch {}
+    const skip = seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (intro && skip) intro.remove();
   })();
 </script>
@@ -70,7 +80,10 @@ const greetings = site.greetings;
   if (intro) {
     const KEY = "intro-seen";
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const seen = sessionStorage.getItem(KEY) === "1";
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem(KEY) === "1";
+    } catch {}
 
     if (seen || reduceMotion) {
       intro.remove();
@@ -79,7 +92,9 @@ const greetings = site.greetings;
       const text = intro.querySelector<HTMLElement>(".intro-text");
       const root = document.documentElement;
       root.classList.add("intro-active");
-      sessionStorage.setItem(KEY, "1");
+      try {
+        sessionStorage.setItem(KEY, "1");
+      } catch {}
 
       const leave = () => {
         intro.classList.add("is-leaving");
