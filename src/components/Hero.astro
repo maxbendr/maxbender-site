@@ -4,65 +4,179 @@ import { obfuscateEmail, site } from "../lib/content";
 const email = obfuscateEmail(site.email);
 ---
 
-<section class="mx-auto grid max-w-5xl gap-12 px-6 pb-16 pt-16 sm:pb-24 sm:pt-28 lg:grid-cols-[1.35fr_1fr] lg:items-center lg:gap-16">
-  <div class="reveal is-visible">
-    <p class="font-mono text-xs uppercase tracking-[0.2em] accent">{site.name}</p>
-    <h1 class="mt-6 max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">
-      {site.positioning}
-    </h1>
-    <p class="mt-6 max-w-xl text-lg text-ink-soft sm:text-xl dark:text-chalk-soft">
-      {site.subline}
-    </p>
+<section class="hero relative isolate overflow-hidden bg-night text-chalk" data-hero>
+  <div class="hero-blob hero-blob-a" aria-hidden="true"></div>
+  <div class="hero-blob hero-blob-b" aria-hidden="true"></div>
 
-    <div class="mt-10 flex flex-wrap items-center gap-3">
-      <a
-        href={site.links.linkedin}
-        target="_blank"
-        rel="me noopener"
-        class="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-transform duration-200 hover:-translate-y-0.5 dark:bg-accent-dark dark:text-night"
-      >
-        LinkedIn
-      </a>
-      <a
-        href="#contact"
-        data-email-link
-        data-user={email.user}
-        data-domain={email.domain}
-        class="edge rounded-full border px-5 py-2.5 text-sm font-medium transition-colors duration-200 hover:border-accent hover:text-accent dark:hover:border-accent-dark dark:hover:text-accent-dark"
-      >
-        Email
-      </a>
+  <div class="relative mx-auto flex min-h-[calc(100svh-4rem)] max-w-6xl flex-col justify-center px-6 py-20 sm:py-28">
+    <h1
+      class="hero-title max-w-[18ch] text-[clamp(2.6rem,9.5vw,7rem)] font-semibold uppercase leading-[1.02] tracking-tight"
+      data-hero-title
+    >
+      {site.hero.map((seg, i) =>
+        "text" in seg ? (
+          <span class="hero-word">
+            {seg.text} {seg.break && <br />}
+          </span>
+        ) : (
+          <span class="hero-pic" data-hero-pic data-depth={((i % 3) + 1) * 6}>
+            <img
+              src={seg.image}
+              alt={seg.alt}
+              width="400"
+              height="200"
+              loading="eager"
+              decoding="async"
+              fetchpriority={i < 4 ? "high" : "auto"}
+            />
+          </span>
+        ),
+      )}
+    </h1>
+
+    <div class="mt-12 flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+      <p class="max-w-md text-lg text-chalk-soft sm:text-xl">{site.subline}</p>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <a
+          href={site.links.linkedin}
+          target="_blank"
+          rel="me noopener"
+          class="rounded-full bg-accent-dark px-5 py-2.5 text-sm font-medium text-night transition-transform duration-200 hover:-translate-y-0.5"
+        >
+          LinkedIn
+        </a>
+        <a
+          href="#contact"
+          data-email-link
+          data-user={email.user}
+          data-domain={email.domain}
+          class="rounded-full border border-chalk/20 px-5 py-2.5 text-sm font-medium transition-colors duration-200 hover:border-accent-dark hover:text-accent-dark"
+        >
+          Email
+        </a>
+      </div>
     </div>
 
-    <p class="mt-8 font-mono text-xs text-ink-soft dark:text-chalk-soft">
-      Press <span class="accent">Ctrl</span> + <span class="accent">K</span> to jump around.
+    <p class="mt-10 font-mono text-xs text-chalk-soft">
+      Press <span class="text-accent-dark">Ctrl</span> + <span class="text-accent-dark">K</span>{" "}
+      to jump around.
     </p>
   </div>
-
-  <figure class="reveal is-visible order-first lg:order-none">
-    <div class="edge relative overflow-hidden rounded-3xl border">
-      <img
-        src={site.headshot}
-        alt={site.headshotAlt}
-        width="800"
-        height="800"
-        fetchpriority="high"
-        decoding="async"
-        class="aspect-square w-full object-cover"
-      />
-    </div>
-    <figcaption class="mt-3 font-mono text-xs text-ink-soft dark:text-chalk-soft">
-      Valencia, most of the time.
-    </figcaption>
-  </figure>
 </section>
 
+<style>
+  .hero-word {
+    display: inline;
+  }
+
+  .hero-pic {
+    display: inline-block;
+    width: 1.9em;
+    height: 0.74em;
+    margin: 0 0.08em;
+    vertical-align: -0.08em;
+    overflow: hidden;
+    border-radius: 0.12em;
+    transform: translate3d(var(--px, 0px), var(--py, 0px), 0);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .hero-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    transform: scale(1.08);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .hero-pic:hover img {
+    transform: scale(1);
+  }
+
+  .hero-title {
+    transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .hero-blob {
+    position: absolute;
+    z-index: -1;
+    width: 60vmax;
+    height: 60vmax;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.22;
+    pointer-events: none;
+  }
+
+  .hero-blob-a {
+    top: -25vmax;
+    right: -15vmax;
+    background: radial-gradient(circle at 40% 40%, var(--color-accent-dark), transparent 65%);
+    animation: drift-a 26s ease-in-out infinite alternate;
+  }
+
+  .hero-blob-b {
+    bottom: -30vmax;
+    left: -20vmax;
+    background: radial-gradient(circle at 60% 60%, #6b7cff, transparent 65%);
+    animation: drift-b 32s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift-a {
+    to {
+      transform: translate3d(-12vmax, 10vmax, 0) scale(1.15);
+    }
+  }
+
+  @keyframes drift-b {
+    to {
+      transform: translate3d(14vmax, -8vmax, 0) scale(0.9);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-blob {
+      animation: none;
+    }
+  }
+</style>
+
 <script>
-  // The address is assembled in the browser so scrapers do not get a plain mailto.
   document.querySelectorAll<HTMLAnchorElement>("[data-email-link]").forEach((link) => {
     const user = link.dataset.user;
     const domain = link.dataset.domain;
     if (!user || !domain) return;
     link.href = `mailto:${user}@${domain}`;
   });
+
+  // Pointer parallax: the headline drifts a touch toward the cursor, each photo a bit more.
+  const hero = document.querySelector<HTMLElement>("[data-hero]");
+  const title = hero?.querySelector<HTMLElement>("[data-hero-title]");
+  const pics = Array.from(hero?.querySelectorAll<HTMLElement>("[data-hero-pic]") ?? []);
+  const fine = window.matchMedia("(pointer: fine)").matches;
+  const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (hero && title && fine && !still) {
+    const apply = (nx: number, ny: number) => {
+      title.style.setProperty("--tx", `${nx * 6}px`);
+      title.style.setProperty("--ty", `${ny * 6}px`);
+      pics.forEach((pic) => {
+        const depth = Number(pic.dataset.depth ?? 6);
+        pic.style.setProperty("--px", `${nx * depth}px`);
+        pic.style.setProperty("--py", `${ny * depth}px`);
+      });
+    };
+    hero.addEventListener("pointermove", (e) => {
+      const r = hero.getBoundingClientRect();
+      apply(
+        ((e.clientX - r.left) / r.width - 0.5) * 2,
+        ((e.clientY - r.top) / r.height - 0.5) * 2,
+      );
+    });
+    hero.addEventListener("pointerleave", () => apply(0, 0));
+  }
 </script>

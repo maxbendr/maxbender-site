@@ -6,10 +6,14 @@ import siteData from "../../content/site.json";
 import travelData from "../../content/travel.json";
 import writingData from "../../content/writing.json";
 
+export type HeroSegment = { text: string; break?: boolean } | { image: string; alt: string };
+
 export interface SiteContent {
   name: string;
   siteUrl: string;
   positioning: string;
+  /** Hero headline, in order. Text segments are words, image segments are small inline photos. */
+  hero: HeroSegment[];
   subline: string;
   description: string;
   email: string;

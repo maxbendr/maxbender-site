@@ -23,17 +23,17 @@ Node 22.12 or newer.
 Everything below is plain markdown or JSON. Change a file, commit, and Vercel
 rebuilds. Anything marked `[PLACEHOLDER]` still needs real content.
 
-| File                      | What it controls                                                                                            |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `content/site.json`       | Name, positioning line, subline, email, social links (LinkedIn, Substack), contact form endpoint, analytics |
-| `content/work/*.md`       | The "What I do" cards. One file per card, `order` sets the position                                         |
-| `content/projects/*.md`   | The "Building" cards. Name, tagline, stack, link, screenshot path                                           |
-| `content/posts/*.md`      | Articles. One file per article, filename is the URL slug                                                    |
-| `content/writing.json`    | Writing intro plus optional LinkedIn posts: title, one line summary, url, date                              |
-| `content/travel.json`     | Map pins: city, country, lat, lng, note, optional url                                                       |
-| `content/background.json` | The timeline on the Background section                                                                      |
-| `content/mentoring.json`  | The Mentoring section: copy, photo path and the three cards                                                 |
-| `content/now.md`          | The `/now` page                                                                                             |
+| File                      | What it controls                                                                                                                                              |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `content/site.json`       | Name, positioning line, `hero` headline (text and inline image segments), subline, email, social links (LinkedIn, Substack), contact form endpoint, analytics |
+| `content/work/*.md`       | The "What I do" cards. One file per card, `order` sets the position                                                                                           |
+| `content/projects/*.md`   | The "Building" cards. Name, tagline, stack, link, screenshot path                                                                                             |
+| `content/posts/*.md`      | Articles. One file per article, filename is the URL slug                                                                                                      |
+| `content/writing.json`    | Writing intro plus optional LinkedIn posts: title, one line summary, url, date                                                                                |
+| `content/travel.json`     | Map pins: city, country, lat, lng, note, optional url                                                                                                         |
+| `content/background.json` | The timeline on the Background section                                                                                                                        |
+| `content/mentoring.json`  | The Mentoring section: copy, photo path and the three cards                                                                                                   |
+| `content/now.md`          | The `/now` page                                                                                                                                               |
 
 Adding a card or a log entry means adding a file. Removing one means deleting
 the file. No code changes needed.
