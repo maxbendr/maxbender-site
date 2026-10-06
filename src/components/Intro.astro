@@ -50,6 +50,7 @@ const greetings = site.greetings;
   }
   html.intro-active {
     overflow: hidden;
+    scrollbar-gutter: stable;
   }
 </style>
 
@@ -73,7 +74,9 @@ const greetings = site.greetings;
       const leave = () => {
         intro.classList.add("is-leaving");
         root.classList.remove("intro-active");
-        intro.addEventListener("transitionend", () => intro.remove(), { once: true });
+        intro.addEventListener("transitionend", (event) => {
+          if (event.target === intro && event.propertyName === "transform") intro.remove();
+        });
         setTimeout(() => intro.remove(), 1200);
       };
 
