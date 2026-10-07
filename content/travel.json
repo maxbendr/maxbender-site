@@ -1,7 +1,7 @@
 {
   "label": "Where I work",
   "title": "Fourteen countries, one job: make startups and big organizations useful to each other.",
-  "intro": "Click a pin for what I actually did there. No client names, ever.",
+  "intro": "A snapshot of some of the projects, not all of them. Click a pin for what I actually did there. No client names, ever.",
   "places": [
     {
       "city": "Abu Dhabi",
@@ -79,19 +79,19 @@
       "image": "/images/places/lagos.jpg"
     },
     {
-      "city": "Sunnyvale",
+      "city": "San Francisco",
       "country": "United States",
-      "lat": 37.3688,
-      "lng": -122.0363,
+      "lat": 37.7749,
+      "lng": -122.4194,
       "note": "Headquarters trips and a lot of jet lag.",
       "url": "",
-      "kind": "HQ and investors",
+      "kind": "HQ and corporate education",
       "items": [
-        "Investor and partner meetings",
-        "Bringing portfolio startups to corporate partners",
-        "Ran a week-long innovation academy at HQ for corporate innovation leaders"
+        "Corporate education program at HQ for major international companies from the Americas, Europe, EMEA and Asia",
+        "Innovation, best practices and venture capital, with a focus on AI",
+        "Bringing portfolio startups to corporate partners"
       ],
-      "image": "/images/places/sunnyvale.jpg"
+      "image": "/images/places/san-francisco.jpg"
     },
     {
       "city": "Phnom Penh",
@@ -118,7 +118,8 @@
       "kind": "Ecosystem assessment",
       "items": [
         "Ecosystem assessment and roadmap for UK startups",
-        "Connecting international innovation hubs"
+        "Connecting international innovation hubs",
+        "Venture building: how a corporate builds its own venture"
       ],
       "image": "/images/places/london.jpg"
     },
@@ -201,15 +202,29 @@
       "image": ""
     },
     {
-      "city": "US West Coast",
+      "city": "Portland",
       "country": "United States",
-      "lat": 44.0,
-      "lng": -124.1,
+      "lat": 45.5152,
+      "lng": -122.6784,
       "note": "Consumer scale, AI questions.",
       "url": "",
       "kind": "AI consulting",
-      "items": ["AI solutions consulting for a global consumer brand"],
-      "image": "/images/places/us-west-coast.jpg"
+      "items": ["Consultancy project for a global consumer brand", "AI solutions consulting"],
+      "image": "/images/places/portland.jpg"
+    },
+    {
+      "city": "Paris",
+      "country": "France",
+      "lat": 48.8566,
+      "lng": 2.3522,
+      "note": "Big corporates, new ventures.",
+      "url": "",
+      "kind": "Venture building",
+      "items": [
+        "Venture building with corporates: how a company builds its own venture",
+        "From opportunity to first team and launch plan"
+      ],
+      "image": "/images/places/paris.jpg"
     }
   ]
 }
