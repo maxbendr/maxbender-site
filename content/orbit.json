@@ -1,0 +1,84 @@
+{
+  "label": "Who I work with",
+  "title": "Everyone it takes to make innovation happen.",
+  "hint": "Click a word.",
+  "players": [
+    {
+      "id": "government",
+      "label": "Government",
+      "font": "fraunces",
+      "lead": "Public agencies that want a startup ecosystem, not a press release.",
+      "items": [
+        "Ecosystem assessments for public innovation agencies",
+        "Program design with ministries and development agencies",
+        "[PLACEHOLDER] one concrete outcome, no client names"
+      ]
+    },
+    {
+      "id": "venture-capital",
+      "label": "Venture capital",
+      "font": "instrument",
+      "lead": "Funds I scout with, co-host with and send founders to.",
+      "items": [
+        "Deal flow sharing with regional and international funds",
+        "Investor days and pitch sessions inside programs",
+        "[PLACEHOLDER]"
+      ]
+    },
+    {
+      "id": "corporates",
+      "label": "Corporates",
+      "font": "unbounded",
+      "lead": "Large companies that want to work with startups and need someone to make it real.",
+      "items": [
+        "Open innovation programs, from problem statement to pilot",
+        "Workshops with business units on how to buy from startups",
+        "[PLACEHOLDER]"
+      ]
+    },
+    {
+      "id": "startups",
+      "label": "Startups",
+      "font": "bricolage",
+      "lead": "Founders I scout, select and get in front of the right people.",
+      "items": [
+        "Scouting and selection across Europe, MENA, West Africa and the Caucasus",
+        "Pilot scoping and corporate introductions",
+        "[PLACEHOLDER]"
+      ]
+    },
+    {
+      "id": "accelerators",
+      "label": "Accelerators",
+      "font": "dmserif",
+      "lead": "Programs where I mentor, run sessions or help design the curriculum.",
+      "items": [
+        "Mentoring on corporate sales and go to market",
+        "Workshop design and delivery for cohorts",
+        "[PLACEHOLDER]"
+      ]
+    },
+    {
+      "id": "building",
+      "label": "Building",
+      "font": "syne",
+      "lead": "Things I make myself, mostly with AI tools and too little sleep.",
+      "items": [
+        "Small web apps and internal tools, vibe coded end to end",
+        "This site, built with Astro and a lot of iteration",
+        "[PLACEHOLDER] a project worth showing"
+      ]
+    },
+    {
+      "id": "communities",
+      "label": "Communities",
+      "font": "spacegrotesk",
+      "lead": "Meetups, founder groups and the people who keep an ecosystem talking.",
+      "items": [
+        "Hosting and speaking at ecosystem events",
+        "Connecting founders, operators and investors across cities",
+        "[PLACEHOLDER]"
+      ]
+    }
+  ]
+}

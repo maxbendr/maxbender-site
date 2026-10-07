@@ -1,53 +1,97 @@
 {
-  "intro": "Places I have worked, scouted or spoken in. Click a pin for the short version.",
+  "intro": "Click a pin for what I actually did there. No client names, ever.",
   "places": [
     {
       "city": "Valencia",
       "country": "Spain",
       "lat": 39.4699,
       "lng": -0.3763,
-      "note": "Home base. Good light, good food, and a startup scene that grew up fast.",
-      "url": ""
+      "note": "Where the programs get designed and where I land between trips.",
+      "url": "",
+      "kind": "Home base",
+      "items": [
+        "Open innovation programs for corporates, end to end",
+        "Workshops with founders and corporate teams",
+        "[PLACEHOLDER] one concrete outcome"
+      ],
+      "image": "/images/speaking.jpg"
     },
     {
       "city": "Tbilisi",
       "country": "Georgia",
       "lat": 41.7151,
       "lng": 44.8271,
-      "note": "[PLACEHOLDER: one line about the work here.] Founders here build for export from day one.",
-      "url": ""
+      "note": "Founders here build for export from day one.",
+      "url": "",
+      "kind": "Ecosystem assessment",
+      "items": [
+        "Ecosystem assessment for a public agency",
+        "Startup scouting and program design",
+        "[PLACEHOLDER]"
+      ],
+      "image": ""
     },
     {
       "city": "Yerevan",
       "country": "Armenia",
       "lat": 40.1792,
       "lng": 44.4991,
-      "note": "[PLACEHOLDER: one line about the work here.] Deep tech talent density that surprises people.",
-      "url": ""
+      "note": "Deep tech talent density that surprises people.",
+      "url": "",
+      "kind": "Ecosystem program",
+      "items": [
+        "Program design with a local partner",
+        "Mentoring sessions for deep tech founders",
+        "[PLACEHOLDER]"
+      ],
+      "image": ""
     },
     {
       "city": "Abu Dhabi",
       "country": "United Arab Emirates",
       "lat": 24.4539,
       "lng": 54.3773,
-      "note": "[PLACEHOLDER: one line about the work here.] Capital moves quickly when the mandate is clear.",
-      "url": ""
+      "note": "Capital moves quickly when the mandate is clear.",
+      "url": "",
+      "kind": "Corporate innovation",
+      "items": [
+        "Corporate pilots with regional startups",
+        "Investor and government introductions",
+        "[PLACEHOLDER]"
+      ],
+      "image": ""
     },
     {
       "city": "Lagos",
       "country": "Nigeria",
       "lat": 6.5244,
       "lng": 3.3792,
-      "note": "[PLACEHOLDER: one line about the work here.] The most energy per square meter I have seen anywhere.",
-      "url": ""
+      "note": "The most energy per square meter I have seen anywhere.",
+      "url": "",
+      "kind": "Accelerator",
+      "items": [
+        "Accelerator mentoring and workshops",
+        "Scouting for corporate partners",
+        "[PLACEHOLDER]"
+      ],
+      "image": "/images/mentoring.jpg"
     },
     {
       "city": "Sunnyvale",
       "country": "United States",
       "lat": 37.3688,
       "lng": -122.0363,
-      "note": "[PLACEHOLDER: one line about the work here.] Headquarters trips and a lot of jet lag.",
-      "url": ""
+      "note": "Headquarters trips and a lot of jet lag.",
+      "url": "",
+      "kind": "HQ and investors",
+      "items": [
+        "Investor and partner meetings",
+        "Bringing portfolio startups to corporate partners",
+        "[PLACEHOLDER]"
+      ],
+      "image": ""
     }
-  ]
+  ],
+  "label": "Where I work",
+  "title": "Six cities, one job: make startups and big organizations useful to each other."
 }

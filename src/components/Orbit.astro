@@ -1,0 +1,317 @@
+---
+import { orbit, site } from "../lib/content";
+
+const n = orbit.players.length;
+/* Starting angle, radius ratio, drift speed and tilt per word; motion is layered on the client. */
+const words = orbit.players.map((p, i) => ({
+  ...p,
+  angle: (i / n) * 360 + 65,
+  radius: 0.9 + (i % 2) * 0.08,
+  speed: 0.55 + (i % 2) * 0.08,
+  tilt: ((i % 3) - 1) * 6,
+}));
+---
+
+<section id="orbit" class="mx-auto max-w-6xl px-6 py-20 sm:py-28">
+  <div class="reveal text-center">
+    <p class="eyebrow">{orbit.label}</p>
+    <h2 class="mx-auto mt-4 max-w-2xl text-3xl font-semibold tracking-tight sm:text-5xl">
+      {orbit.title}
+      <span class="text-ink-soft dark:text-chalk-soft">{orbit.hint}</span>
+    </h2>
+  </div>
+
+  <div class="stage reveal" data-stage>
+    <div class="halo" aria-hidden="true"></div>
+    <div class="halo halo-b" aria-hidden="true"></div>
+    <img
+      class="me"
+      src={site.headshotCutout}
+      alt={site.name}
+      width="800"
+      height="800"
+      loading="lazy"
+      decoding="async"
+      draggable="false"
+    />
+    <ul class="words" role="list">
+      {words.map((w) => (
+        <li
+          class="word"
+          data-word
+          data-angle={w.angle}
+          data-radius={w.radius}
+          data-speed={w.speed}
+          data-tilt={w.tilt}
+          style={`--angle:${w.angle}deg;--r:${w.radius};--tilt:${w.tilt}deg`}
+        >
+          <button
+            type="button"
+            class={`word-btn font-${w.font}`}
+            data-open={w.id}
+            aria-haspopup="dialog"
+            aria-controls={`player-${w.id}`}
+          >
+            {w.label}
+          </button>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  {orbit.players.map((p) => (
+    <dialog id={`player-${p.id}`} class="player" aria-labelledby={`player-${p.id}-title`}>
+      <div class="player-card">
+        <p class="eyebrow">{orbit.label}</p>
+        <h3 id={`player-${p.id}-title`} class={`font-${p.font} mt-2 text-4xl sm:text-5xl`}>
+          {p.label}
+        </h3>
+        <p class="mt-4 text-lg text-ink-soft dark:text-chalk-soft">{p.lead}</p>
+        <ul class="mt-6 space-y-3">
+          {p.items.map((item) => (
+            <li class="edge flex gap-3 border-t pt-3">
+              <span class="accent mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+        <form method="dialog" class="mt-8 flex justify-end">
+          <button type="submit" class="btn">
+            Close
+          </button>
+        </form>
+      </div>
+    </dialog>
+  ))}
+</section>
+
+<style>
+  .stage {
+    --size: min(88vw, 40rem);
+    position: relative;
+    width: var(--size);
+    height: var(--size);
+    margin: 3rem auto 0;
+  }
+
+  .halo {
+    position: absolute;
+    inset: 12%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(var(--accent-rgb), 0.16), transparent 70%);
+    animation: breathe 9s ease-in-out infinite;
+  }
+
+  .halo-b {
+    inset: 28%;
+    background: radial-gradient(circle, rgba(255, 178, 140, 0.22), transparent 70%);
+    animation-delay: -4s;
+  }
+
+  .me {
+    position: absolute;
+    left: 50%;
+    bottom: 10%;
+    width: 42%;
+    height: auto;
+    translate: -50% 0;
+    filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.18));
+    user-select: none;
+    animation: float 7s ease-in-out infinite;
+  }
+
+  .words {
+    position: absolute;
+    inset: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .word {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+      translate(
+        calc(cos(var(--angle)) * var(--r) * var(--size) / 2),
+        calc(sin(var(--angle)) * var(--r) * var(--size) / 2 * 0.7)
+      )
+      rotate(var(--tilt));
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    white-space: nowrap;
+  }
+
+  .stage.is-live .word {
+    transition: none;
+  }
+
+  .word-btn {
+    background: none;
+    border: 0;
+    padding: 0.3em 0.4em;
+    color: inherit;
+    font-size: clamp(1.4rem, 4.5vw, 2.6rem);
+    line-height: 1;
+    transition:
+      color 0.3s,
+      transform 0.3s;
+  }
+
+  .word-btn:hover,
+  .word-btn:focus-visible {
+    color: var(--color-accent);
+    transform: scale(1.08);
+    outline: none;
+  }
+
+  :global(.dark) .word-btn:hover,
+  :global(.dark) .word-btn:focus-visible {
+    color: var(--color-accent-dark);
+  }
+
+  .font-fraunces {
+    font-family: "Fraunces Variable", serif;
+    font-weight: 300;
+    font-variation-settings: "opsz" 144;
+  }
+
+  .font-instrument {
+    font-family: "Instrument Serif", serif;
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .font-unbounded {
+    font-family: "Unbounded Variable", sans-serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    font-size: 0.75em;
+  }
+
+  .font-bricolage {
+    font-family: "Bricolage Grotesque Variable", sans-serif;
+    font-weight: 800;
+    font-variation-settings: "wdth" 110;
+  }
+
+  .font-dmserif {
+    font-family: "DM Serif Display", serif;
+    font-style: italic;
+  }
+
+  .font-syne {
+    font-family: "Syne Variable", sans-serif;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.8em;
+  }
+
+  .font-spacegrotesk {
+    font-family: "Space Grotesk Variable", sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: lowercase;
+  }
+
+  .player {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    max-width: min(92vw, 34rem);
+    width: 100%;
+    color: inherit;
+  }
+
+  .player::backdrop {
+    background: rgba(17, 17, 17, 0.35);
+    backdrop-filter: blur(8px);
+  }
+
+  .player[open] {
+    animation: player-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .player-card {
+    background: var(--card);
+    border: 1px solid var(--edge);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
+  }
+
+  @keyframes breathe {
+    50% {
+      transform: scale(1.12);
+    }
+  }
+
+  @keyframes float {
+    50% {
+      translate: -50% -2%;
+    }
+  }
+
+  @keyframes player-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+    }
+  }
+</style>
+
+<script>
+  const stage = document.querySelector<HTMLElement>("[data-stage]");
+  const words = [...document.querySelectorAll<HTMLElement>("[data-word]")];
+  const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  for (const btn of document.querySelectorAll<HTMLButtonElement>("[data-open]")) {
+    const dialog = document.getElementById(`player-${btn.dataset.open}`);
+    if (dialog instanceof HTMLDialogElement) {
+      btn.addEventListener("click", () => dialog.showModal());
+      dialog.addEventListener("click", (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+    }
+  }
+
+  if (stage && words.length && !still.matches) {
+    const state = words.map((el) => ({
+      el,
+      angle: Number(el.dataset.angle),
+      radius: Number(el.dataset.radius),
+      speed: Number(el.dataset.speed),
+      tilt: Number(el.dataset.tilt),
+      phase: Math.random() * Math.PI * 2,
+    }));
+    let paused = false;
+    let last = performance.now();
+    let visible = false;
+
+    stage.addEventListener("pointerenter", () => (paused = true));
+    stage.addEventListener("pointerleave", () => (paused = false));
+    new IntersectionObserver(([entry]) => (visible = entry?.isIntersecting ?? false), {
+      rootMargin: "100px",
+    }).observe(stage);
+
+    const tick = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.1);
+      last = now;
+      if (visible) {
+        stage.classList.add("is-live");
+        for (const w of state) {
+          if (!paused) w.angle += dt * w.speed * 6;
+          const breathe = Math.sin(now / 1800 + w.phase) * 0.04;
+          const bob = Math.sin(now / 1300 + w.phase) * 3;
+          w.el.style.setProperty("--angle", `${w.angle}deg`);
+          w.el.style.setProperty("--r", `${w.radius + breathe}`);
+          w.el.style.setProperty("--tilt", `${w.tilt + bob}deg`);
+        }
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+</script>

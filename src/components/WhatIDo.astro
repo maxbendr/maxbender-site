@@ -17,12 +17,9 @@ const cards = await Promise.all(
   title="I sit between corporates and startups, and try to make that useful."
   intro="Open innovation at Plug and Play. That means connecting large companies with startups, then designing and running the programs that turn those meetings into something real. I have done this across Europe, the Middle East, West Africa and the Caucasus."
 >
-  <div class="grid gap-px overflow-hidden rounded-2xl bg-[var(--edge)] sm:grid-cols-2">
+  <div class="grid gap-4 sm:grid-cols-2">
     {cards.map(({ title, Content }, index) => (
-      <article
-        class="reveal group bg-paper p-7 transition-colors duration-300 hover:bg-paper-soft dark:bg-night dark:hover:bg-night-soft"
-        style={`transition-delay:${index * 60}ms`}
-      >
+      <article class="card reveal p-7" style={`transition-delay:${index * 60}ms`}>
         <div class="flex items-baseline gap-3">
           <span class="font-mono text-xs text-ink-soft dark:text-chalk-soft">0{index + 1}</span>
           <h3 class="text-xl font-semibold tracking-tight">{title}</h3>
