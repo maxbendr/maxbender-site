@@ -1,0 +1,19 @@
+{
+  "label": "Building",
+  "title": "I automate most of my own work and build small tools with AI.",
+  "intro": "Nothing here is a company. Each one started because something kept eating my time.",
+  "items": [
+    {
+      "title": "A personal operating dashboard",
+      "text": "Reads my calendar and tasks and briefs me twice a day."
+    },
+    {
+      "title": "Lumen",
+      "text": "A dashboard for my sleep, recovery and training data."
+    },
+    {
+      "title": "Automations for recurring work",
+      "text": "Interview write-ups, outreach lists, weekly reports."
+    }
+  ]
+}

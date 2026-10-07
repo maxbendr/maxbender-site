@@ -1,6 +1,23 @@
 {
+  "label": "Where I work",
+  "title": "Fourteen countries, one job: make startups and big organizations useful to each other.",
   "intro": "Click a pin for what I actually did there. No client names, ever.",
   "places": [
+    {
+      "city": "Abu Dhabi",
+      "country": "United Arab Emirates",
+      "lat": 24.4539,
+      "lng": 54.3773,
+      "note": "Capital moves quickly when the mandate is clear.",
+      "url": "",
+      "kind": "AI incubator, current base",
+      "items": [
+        "Running a 10-week AI incubator for early-stage founders",
+        "Built the AI track: six hands-on sprints on the AI toolstack",
+        "Corporate immersions plus investor and government introductions"
+      ],
+      "image": "/images/places/abu-dhabi.jpg"
+    },
     {
       "city": "Valencia",
       "country": "Spain",
@@ -8,13 +25,13 @@
       "lng": -0.3763,
       "note": "Where the programs get designed and where I land between trips.",
       "url": "",
-      "kind": "Home base",
+      "kind": "EMEA home base",
       "items": [
         "Open innovation programs for corporates, end to end",
         "Workshops with founders and corporate teams",
-        "[PLACEHOLDER] one concrete outcome"
+        "Designing and pricing 50+ innovation programs a year across EMEA"
       ],
-      "image": "/images/speaking.jpg"
+      "image": "/images/places/valencia.jpg"
     },
     {
       "city": "Tbilisi",
@@ -26,10 +43,10 @@
       "kind": "Ecosystem assessment",
       "items": [
         "Ecosystem assessment for a public agency",
-        "Startup scouting and program design",
-        "[PLACEHOLDER]"
+        "Workshops on feature prioritization and product roadmapping",
+        "One-on-ones with portfolio founders"
       ],
-      "image": ""
+      "image": "/images/places/tbilisi.jpg"
     },
     {
       "city": "Yerevan",
@@ -42,22 +59,7 @@
       "items": [
         "Program design with a local partner",
         "Mentoring sessions for deep tech founders",
-        "[PLACEHOLDER]"
-      ],
-      "image": ""
-    },
-    {
-      "city": "Abu Dhabi",
-      "country": "United Arab Emirates",
-      "lat": 24.4539,
-      "lng": 54.3773,
-      "note": "Capital moves quickly when the mandate is clear.",
-      "url": "",
-      "kind": "Corporate innovation",
-      "items": [
-        "Corporate pilots with regional startups",
-        "Investor and government introductions",
-        "[PLACEHOLDER]"
+        "Part of a Caucasus tour across Georgia and Armenia"
       ],
       "image": ""
     },
@@ -72,9 +74,9 @@
       "items": [
         "Accelerator mentoring and workshops",
         "Scouting for corporate partners",
-        "[PLACEHOLDER]"
+        "Ecosystem assessment for a national industry body"
       ],
-      "image": "/images/mentoring.jpg"
+      "image": "/images/places/lagos.jpg"
     },
     {
       "city": "Sunnyvale",
@@ -87,11 +89,127 @@
       "items": [
         "Investor and partner meetings",
         "Bringing portfolio startups to corporate partners",
-        "[PLACEHOLDER]"
+        "Ran a week-long innovation academy at HQ for corporate innovation leaders"
+      ],
+      "image": "/images/places/sunnyvale.jpg"
+    },
+    {
+      "city": "Phnom Penh",
+      "country": "Cambodia",
+      "lat": 11.5564,
+      "lng": 104.9282,
+      "note": "A whole ecosystem being drawn up from the first page.",
+      "url": "",
+      "kind": "National strategy",
+      "items": [
+        "National startup ecosystem roadmap",
+        "National startup strategy",
+        "Innovation policy consulting"
+      ],
+      "image": "/images/places/phnom-penh.jpg"
+    },
+    {
+      "city": "London",
+      "country": "United Kingdom",
+      "lat": 51.5072,
+      "lng": -0.1276,
+      "note": "Everyone is already here, the job is to connect them.",
+      "url": "",
+      "kind": "Ecosystem assessment",
+      "items": [
+        "Ecosystem assessment and roadmap for UK startups",
+        "Connecting international innovation hubs"
+      ],
+      "image": "/images/places/london.jpg"
+    },
+    {
+      "city": "Tashkent",
+      "country": "Uzbekistan",
+      "lat": 41.2995,
+      "lng": 69.2401,
+      "note": "A young ecosystem moving faster than its reputation.",
+      "url": "",
+      "kind": "Startup competition",
+      "items": [
+        "Jury member for a national startup competition",
+        "Feedback and scoring for early-stage founders"
+      ],
+      "image": "/images/places/tashkent.jpg"
+    },
+    {
+      "city": "Lisbon",
+      "country": "Portugal",
+      "lat": 38.7223,
+      "lng": -9.1393,
+      "note": "Small country, outsized founders.",
+      "url": "",
+      "kind": "Scale-ups",
+      "items": [
+        "Worked with a large number of Portuguese scale-ups",
+        "Now bridging Portuguese startups to Silicon Valley"
+      ],
+      "image": "/images/places/lisbon.jpg"
+    },
+    {
+      "city": "Berlin",
+      "country": "Germany",
+      "lat": 52.52,
+      "lng": 13.405,
+      "note": "Space, programming and the right partners in one building.",
+      "url": "",
+      "kind": "Startup hub",
+      "items": [
+        "Building a coworking and startup hub",
+        "Concept, programming and partner model"
+      ],
+      "image": "/images/places/berlin.jpg"
+    },
+    {
+      "city": "Manila",
+      "country": "Philippines",
+      "lat": 14.5995,
+      "lng": 120.9842,
+      "note": "Founders with enormous markets right outside the door.",
+      "url": "",
+      "kind": "Innovation hub",
+      "items": ["Building an innovation hub", "Programs and partnerships for local founders"],
+      "image": "/images/places/manila.jpg"
+    },
+    {
+      "city": "Tirana",
+      "country": "Albania",
+      "lat": 41.3275,
+      "lng": 19.8187,
+      "note": "First cohorts are the hardest and the most fun.",
+      "url": "",
+      "kind": "Accelerator",
+      "items": ["Helped set up an accelerator", "Mentored its startups through the program"],
+      "image": "/images/places/tirana.jpg"
+    },
+    {
+      "city": "Kuwait City",
+      "country": "Kuwait",
+      "lat": 29.3759,
+      "lng": 47.9774,
+      "note": "Ideas from inside the building, pitched like a startup.",
+      "url": "",
+      "kind": "Intrapreneurship",
+      "items": [
+        "Intrapreneurship hackathon for one of the Gulf's leading banks",
+        "Coaching employee teams from idea to pitch"
       ],
       "image": ""
+    },
+    {
+      "city": "US West Coast",
+      "country": "United States",
+      "lat": 44.0,
+      "lng": -124.1,
+      "note": "Consumer scale, AI questions.",
+      "url": "",
+      "kind": "AI consulting",
+      "items": ["AI solutions consulting for a global consumer brand"],
+      "image": "/images/places/us-west-coast.jpg"
     }
-  ],
-  "label": "Where I work",
-  "title": "Six cities, one job: make startups and big organizations useful to each other."
+  ]
 }

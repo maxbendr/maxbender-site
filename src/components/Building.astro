@@ -1,100 +1,27 @@
 ---
-import { existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { getCollection, render } from "astro:content";
 import Section from "./Section.astro";
+import { building } from "../lib/content";
 import { liveGames } from "../lib/games";
-
-const projectEntries = (await getCollection("projects")).sort(
-  (a, b) => a.data.order - b.data.order,
-);
-
-const projects = await Promise.all(
-  projectEntries.map(async (entry) => {
-    const { Content } = await render(entry);
-    const screenshot = entry.data.screenshot;
-    const hasScreenshot = screenshot
-      ? existsSync(fileURLToPath(new URL(`../../public${screenshot}`, import.meta.url)))
-      : false;
-    return { ...entry.data, hasScreenshot, Content };
-  }),
-);
-
-const linkReady = (link: string) => link !== "" && !link.includes("[PLACEHOLDER");
 ---
 
-<Section
-  id="building"
-  label="Building"
-  title="Things I vibe coded with AI."
-  intro="Side projects I use myself. None of them are companies, all of them started because something annoyed me."
->
-  <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-    {projects.map((project, index) => (
+<Section id="building" label={building.label} title={building.title} intro={building.intro}>
+  <div class="grid gap-5 sm:grid-cols-3">
+    {building.items.map((item, index) => (
       <article
-        class="reveal edge group flex flex-col overflow-hidden rounded-2xl border transition-transform duration-300 hover:-translate-y-1"
+        class="card reveal flex flex-col p-6 sm:p-7"
         style={`transition-delay:${index * 60}ms`}
       >
-        <div class="edge aspect-[16/10] border-b bg-paper-soft dark:bg-night-soft">
-          {project.hasScreenshot ? (
-            <img
-              src={project.screenshot}
-              alt={`${project.name} screenshot`}
-              loading="lazy"
-              decoding="async"
-              width="640"
-              height="400"
-              class="h-full w-full object-cover"
-            />
-          ) : (
-            <div class="flex h-full w-full flex-col items-center justify-center gap-2">
-              <span class="font-mono text-3xl accent">{project.name.charAt(0)}</span>
-              <span class="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft dark:text-chalk-soft">
-                [PLACEHOLDER: screenshot]
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div class="flex flex-1 flex-col p-6">
-          <div class="flex items-center gap-3">
-            <h3 class="text-lg font-semibold tracking-tight">{project.name}</h3>
-            <span class="font-mono text-[10px] uppercase tracking-[0.15em] accent">
-              {project.status}
-            </span>
-          </div>
-          <p class="mt-2 text-sm text-ink-soft dark:text-chalk-soft">{project.tagline}</p>
-          <div class="mt-4 flex flex-wrap gap-2">
-            {project.stack.map((tech) => (
-              <span class="edge rounded-full border px-2.5 py-1 font-mono text-[11px] text-ink-soft dark:text-chalk-soft">
-                {tech}
-              </span>
-            ))}
-          </div>
-          <div class="mt-5 pt-1 text-sm">
-            {linkReady(project.link) ? (
-              <a class="link-underline" href={project.link} target="_blank" rel="noopener">
-                Have a look
-              </a>
-            ) : (
-              <span class="font-mono text-xs text-ink-soft dark:text-chalk-soft">
-                {project.link || "[PLACEHOLDER: link]"}
-              </span>
-            )}
-          </div>
-        </div>
+        <span class="eyebrow">0{index + 1}</span>
+        <h3 class="mt-3 text-xl font-semibold tracking-tight">{item.title}</h3>
+        <p class="mt-2 text-ink-soft dark:text-chalk-soft">{item.text}</p>
       </article>
     ))}
   </div>
 
-  <p class="reveal mt-10 font-mono text-xs text-ink-soft dark:text-chalk-soft">
-    More coming. One Markdown file per project in content/projects.
-  </p>
-
-  <div class="reveal edge mt-16 overflow-hidden rounded-2xl border">
+  <div class="card reveal mt-10 overflow-hidden hover:!translate-y-0 hover:!shadow-none">
     <div class="flex flex-col gap-4 p-7 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h3 class="accent font-mono text-xs uppercase tracking-[0.2em]">Games</h3>
+        <p class="eyebrow">Games</p>
         <p class="mt-3 text-xl font-semibold tracking-tight">
           Small browser games, classics with one thing changed.
         </p>
@@ -102,16 +29,13 @@ const linkReady = (link: string) => link !== "" && !link.includes("[PLACEHOLDER"
           No account, no ads, nothing to install. They run in a tab.
         </p>
       </div>
-      <a
-        href="/games"
-        class="edge shrink-0 self-start rounded-full border px-5 py-2.5 text-sm font-medium transition-colors hover:border-accent hover:text-accent sm:self-auto dark:hover:border-accent-dark dark:hover:text-accent-dark"
-      >
+      <a href="/games" class="btn shrink-0 self-start sm:self-auto">
         Open the arcade
       </a>
     </div>
-    <ul class="grid gap-px bg-[var(--edge)] sm:grid-cols-3">
+    <ul class="edge grid border-t sm:grid-cols-3">
       {liveGames.map((game) => (
-        <li class="bg-paper transition-colors duration-300 hover:bg-paper-soft dark:bg-night dark:hover:bg-night-soft">
+        <li class="edge border-t sm:border-t-0 sm:border-l sm:first:border-l-0">
           <a href={`/games/${game.slug}`} class="group flex h-full flex-col p-6">
             <div class="flex items-baseline justify-between gap-3">
               <h4 class="font-medium tracking-tight transition-colors group-hover:text-accent dark:group-hover:text-accent-dark">

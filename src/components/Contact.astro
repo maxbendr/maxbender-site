@@ -3,7 +3,8 @@ import Section from "./Section.astro";
 import { obfuscateEmail, site } from "../lib/content";
 
 const email = obfuscateEmail(site.email);
-const formReady = !site.contact.formEndpoint.includes("[PLACEHOLDER");
+const formReady =
+  site.contact.formEndpoint !== "" && !site.contact.formEndpoint.includes("[PLACEHOLDER");
 ---
 
 <Section
@@ -13,7 +14,7 @@ const formReady = !site.contact.formEndpoint.includes("[PLACEHOLDER");
   intro={site.contact.note}
   class="contact"
 >
-  <div class="grid gap-12 lg:grid-cols-[1fr_1.1fr]">
+  <div class={formReady ? "grid gap-12 lg:grid-cols-[1fr_1.1fr]" : "grid gap-12"}>
     <div class="reveal space-y-6">
       <p class="text-lg">
         The fastest way to reach me is email. I read everything, I answer most things.
@@ -53,59 +54,55 @@ const formReady = !site.contact.formEndpoint.includes("[PLACEHOLDER");
       </div>
     </div>
 
-    <form
-      class="card reveal space-y-4 p-6 sm:p-8 hover:!translate-y-0 hover:!shadow-none"
-      method="POST"
-      action={formReady ? site.contact.formEndpoint : undefined}
-      data-contact-form
-      data-ready={String(formReady)}
-    >
-      <div class="grid gap-4 sm:grid-cols-2">
-        <label class="block text-sm">
-          <span class="text-ink-soft dark:text-chalk-soft">Name</span>
-          <input
-            type="text"
-            name="name"
-            required
-            autocomplete="name"
-            class="edge mt-1.5 w-full rounded-lg border bg-transparent px-3 py-2 text-base outline-none transition-colors focus:border-accent dark:focus:border-accent-dark"
-          />
-        </label>
-        <label class="block text-sm">
-          <span class="text-ink-soft dark:text-chalk-soft">Email</span>
-          <input
-            type="email"
-            name="email"
-            required
-            autocomplete="email"
-            class="edge mt-1.5 w-full rounded-lg border bg-transparent px-3 py-2 text-base outline-none transition-colors focus:border-accent dark:focus:border-accent-dark"
-          />
-        </label>
-      </div>
-      <label class="block text-sm">
-        <span class="text-ink-soft dark:text-chalk-soft">Message</span>
-        <textarea
-          name="message"
-          rows="5"
-          required
-          class="edge mt-1.5 w-full rounded-lg border bg-transparent px-3 py-2 text-base outline-none transition-colors focus:border-accent dark:focus:border-accent-dark"
-        ></textarea>
-      </label>
-      <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" />
-      <button
-        type="submit"
-        class="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-transform duration-200 hover:-translate-y-0.5 dark:bg-accent-dark dark:text-night"
+    {formReady && (
+      <form
+        class="card reveal space-y-4 p-6 sm:p-8 hover:!translate-y-0 hover:!shadow-none"
+        method="POST"
+        action={formReady ? site.contact.formEndpoint : undefined}
+        data-contact-form
+        data-ready={String(formReady)}
       >
-        Send
-      </button>
-      {!formReady && (
-        <p class="font-mono text-xs text-ink-soft dark:text-chalk-soft">
-          [PLACEHOLDER: add a Formspree or Resend endpoint in content/site.json to switch the
-          form on. Until then it falls back to email.]
-        </p>
-      )}
-      <p class="hidden text-sm accent" data-form-status></p>
-    </form>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="block text-sm">
+            <span class="text-ink-soft dark:text-chalk-soft">Name</span>
+            <input
+              type="text"
+              name="name"
+              required
+              autocomplete="name"
+              class="edge mt-1.5 w-full rounded-lg border bg-transparent px-3 py-2 text-base outline-none transition-colors focus:border-accent dark:focus:border-accent-dark"
+            />
+          </label>
+          <label class="block text-sm">
+            <span class="text-ink-soft dark:text-chalk-soft">Email</span>
+            <input
+              type="email"
+              name="email"
+              required
+              autocomplete="email"
+              class="edge mt-1.5 w-full rounded-lg border bg-transparent px-3 py-2 text-base outline-none transition-colors focus:border-accent dark:focus:border-accent-dark"
+            />
+          </label>
+        </div>
+        <label class="block text-sm">
+          <span class="text-ink-soft dark:text-chalk-soft">Message</span>
+          <textarea
+            name="message"
+            rows="5"
+            required
+            class="edge mt-1.5 w-full rounded-lg border bg-transparent px-3 py-2 text-base outline-none transition-colors focus:border-accent dark:focus:border-accent-dark"
+          ></textarea>
+        </label>
+        <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" />
+        <button
+          type="submit"
+          class="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-transform duration-200 hover:-translate-y-0.5 dark:bg-accent-dark dark:text-night"
+        >
+          Send
+        </button>
+        <p class="hidden text-sm accent" data-form-status></p>
+      </form>
+    )}
   </div>
 </Section>
 
