@@ -293,18 +293,20 @@ const words = orbit.players.map((p, i) => ({
       tilt: Number(el.dataset.tilt),
       phase: Math.random() * Math.PI * 2,
     }));
-    let paused = false;
+    let slow = false;
     let last = performance.now();
     let raf = 0;
 
-    stage.addEventListener("pointerenter", () => (paused = true));
-    stage.addEventListener("pointerleave", () => (paused = false));
+    stage.addEventListener("pointerenter", (e) => {
+      if (e.pointerType === "mouse") slow = true;
+    });
+    stage.addEventListener("pointerleave", () => (slow = false));
 
     const tick = (now: number) => {
       const dt = Math.min((now - last) / 1000, 0.1);
       last = now;
       for (const w of state) {
-        if (!paused) w.angle += dt * w.speed * 6;
+        w.angle += dt * w.speed * (slow ? 1.5 : 6);
         const breathe = Math.sin(now / 1800 + w.phase) * 0.04;
         const bob = Math.sin(now / 1300 + w.phase) * 3;
         w.el.style.setProperty("--angle", `${w.angle}deg`);

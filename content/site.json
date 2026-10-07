@@ -4,35 +4,18 @@
   "positioning": "I build ecosystems, advise startups and bridge the gap to corporates.",
   "hero": [
     {
-      "text": "Hey, I'm Max.",
-      "break": true
-    },
-    {
-      "text": "I build"
+      "text": "Hey, I'm Max"
     },
     {
       "image": "/images/hero-stage.jpg",
-      "alt": "Max speaking on stage at a scale-up event"
+      "alt": "Max speaking on stage"
     },
     {
-      "text": "ecosystems,"
+      "text": "",
+      "break": true
     },
     {
-      "text": "vibe code"
-    },
-    {
-      "image": "/images/hero-team.jpg",
-      "alt": "Max with a startup cohort in Silicon Valley"
-    },
-    {
-      "text": "and bring people"
-    },
-    {
-      "image": "/images/hero-founders.jpg",
-      "alt": "Max running a workshop with founders"
-    },
-    {
-      "text": "together."
+      "text": "I build ecosystems, build with AI and bring people together."
     }
   ],
   "subline": "Open Innovation at Plug and Play. Based in Abu Dhabi, usually somewhere else.",
