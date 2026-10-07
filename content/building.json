@@ -4,12 +4,12 @@
   "intro": "Nothing here is a company. Each one started because something kept eating my time.",
   "items": [
     {
-      "title": "A personal operating dashboard",
-      "text": "Reads my calendar and tasks and briefs me twice a day."
+      "title": "Max Control",
+      "text": "An AI agent that works like a secretary: handles my scheduling, runs tasks for me automatically and tells me what to focus on."
     },
     {
       "title": "Lumen",
-      "text": "A dashboard for my sleep, recovery and training data."
+      "text": "Takes the raw data from my Fitbit, reinterprets it in a design I actually want to look at, syncs it to the cloud and runs real analytics on it for training, recovery and general health."
     },
     {
       "title": "Automations for recurring work",

@@ -1,6 +1,6 @@
 ---
 import Section from "./Section.astro";
-import { building } from "../lib/content";
+import { building, site } from "../lib/content";
 import { liveGames } from "../lib/games";
 ---
 
@@ -17,6 +17,13 @@ import { liveGames } from "../lib/games";
       </article>
     ))}
   </div>
+  <p class="reveal mt-6 text-sm text-ink-soft dark:text-chalk-soft">
+    Code and experiments live on
+    <a class="link-underline" href={site.links.github} target="_blank" rel="me noopener">
+      GitHub
+    </a>
+    .
+  </p>
 
   <div class="card reveal mt-10 overflow-hidden hover:!translate-y-0 hover:!shadow-none">
     <div class="flex flex-col gap-4 p-7 sm:flex-row sm:items-center sm:justify-between">
