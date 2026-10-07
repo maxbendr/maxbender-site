@@ -1,15 +1,20 @@
 import { getCollection } from "astro:content";
 
 import backgroundData from "../../content/background.json";
-import mentoringData from "../../content/mentoring.json";
+import orbitData from "../../content/orbit.json";
 import siteData from "../../content/site.json";
+import toolsData from "../../content/tools.json";
 import travelData from "../../content/travel.json";
 import writingData from "../../content/writing.json";
+
+export type HeroSegment = { text: string; break?: boolean } | { image: string; alt: string };
 
 export interface SiteContent {
   name: string;
   siteUrl: string;
   positioning: string;
+  hero: HeroSegment[];
+  headshotCutout: string;
   subline: string;
   description: string;
   email: string;
@@ -42,30 +47,50 @@ export interface Place {
   country: string;
   lat: number;
   lng: number;
+  kind: string;
   note: string;
+  items: string[];
+  image: string;
   url: string;
 }
 
 export interface TravelContent {
+  label: string;
+  title: string;
   intro: string;
   places: Place[];
 }
 
-export interface MentoringContent {
+export type PlayerFont =
+  "fraunces" | "instrument" | "unbounded" | "bricolage" | "dmserif" | "syne" | "spacegrotesk";
+
+export interface Player {
+  id: string;
+  label: string;
+  font: PlayerFont;
+  lead: string;
+  items: string[];
+}
+
+export interface OrbitContent {
   label: string;
   title: string;
-  intro: string;
-  image: string;
-  imageAlt: string;
-  items: { title: string; body: string }[];
-  cta: string;
+  hint: string;
+  players: Player[];
+}
+
+export interface ToolsContent {
+  label: string;
+  title: string;
+  tools: { name: string; logo: string }[];
 }
 
 export const site = siteData as SiteContent;
 export const writing = writingData as WritingContent;
 export const background = backgroundData as BackgroundContent;
 export const travel = travelData as TravelContent;
-export const mentoring = mentoringData as MentoringContent;
+export const orbit = orbitData as OrbitContent;
+export const tools = toolsData as ToolsContent;
 
 /** Newest first, drafts dropped from the production build. */
 export async function getPosts() {
@@ -104,11 +129,9 @@ export function obfuscateEmail(email: string): { user: string; domain: string } 
 }
 
 export const sections = [
-  { id: "work", label: "What I do" },
-  { id: "mentoring", label: "Mentoring" },
-  { id: "building", label: "Building" },
-  { id: "writing", label: "Writing" },
+  { id: "work", label: "Work" },
+  { id: "orbit", label: "Ecosystem" },
+  { id: "tools", label: "Tools" },
   { id: "travel", label: "Travel" },
-  { id: "background", label: "Background" },
-  { id: "contact", label: "Contact" },
+  { id: "background", label: "About" },
 ] as const;

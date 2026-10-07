@@ -6,7 +6,13 @@ const email = obfuscateEmail(site.email);
 const formReady = !site.contact.formEndpoint.includes("[PLACEHOLDER");
 ---
 
-<Section id="contact" label="Contact" title="Say hello." intro={site.contact.note}>
+<Section
+  id="contact"
+  label="Contact"
+  title="Say hello."
+  intro={site.contact.note}
+  class="contact"
+>
   <div class="grid gap-12 lg:grid-cols-[1fr_1.1fr]">
     <div class="reveal space-y-6">
       <p class="text-lg">
@@ -48,7 +54,7 @@ const formReady = !site.contact.formEndpoint.includes("[PLACEHOLDER");
     </div>
 
     <form
-      class="reveal edge space-y-4 rounded-2xl border p-6 sm:p-8"
+      class="card reveal space-y-4 p-6 sm:p-8 hover:!translate-y-0 hover:!shadow-none"
       method="POST"
       action={formReady ? site.contact.formEndpoint : undefined}
       data-contact-form

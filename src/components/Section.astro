@@ -5,16 +5,27 @@ interface Props {
   title: string;
   intro?: string;
   class?: string;
+  center?: boolean;
 }
 
-const { id, label, title, intro, class: className = "" } = Astro.props;
+const { id, label, title, intro, class: className = "", center = false } = Astro.props;
 ---
 
-<section id={id} class={`mx-auto max-w-5xl px-6 py-20 sm:py-28 ${className}`}>
-  <div class="reveal">
-    <p class="font-mono text-xs uppercase tracking-[0.2em] accent">{label}</p>
-    <h2 class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>
-    {intro && <p class="mt-4 max-w-2xl text-lg text-ink-soft dark:text-chalk-soft">{intro}</p>}
+<section id={id} class={`mx-auto max-w-6xl px-6 py-20 sm:py-28 ${className}`}>
+  <div class={`reveal ${center ? "text-center" : ""}`}>
+    <p class="eyebrow">{label}</p>
+    <h2
+      class={`mt-4 max-w-3xl text-3xl font-semibold tracking-tight sm:text-5xl ${center ? "mx-auto" : ""}`}
+    >
+      {title}
+    </h2>
+    {intro && (
+      <p
+        class={`mt-5 max-w-2xl text-lg text-ink-soft dark:text-chalk-soft ${center ? "mx-auto" : ""}`}
+      >
+        {intro}
+      </p>
+    )}
   </div>
   <div class="mt-10 sm:mt-14">
     <slot />

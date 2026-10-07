@@ -1,0 +1,62 @@
+{
+  "label": "Tools",
+  "title": "What I build with.",
+  "tools": [
+    {
+      "name": "Cursor",
+      "logo": "/logos/cursor.svg"
+    },
+    {
+      "name": "Antigravity",
+      "logo": "/logos/antigravity.png"
+    },
+    {
+      "name": "Gemini",
+      "logo": "/logos/googlegemini.svg"
+    },
+    {
+      "name": "Base44",
+      "logo": "/logos/base44.png"
+    },
+    {
+      "name": "Framer",
+      "logo": "/logos/framer.svg"
+    },
+    {
+      "name": "Magic Patterns",
+      "logo": "/logos/magicpatterns.svg"
+    },
+    {
+      "name": "Cloudflare",
+      "logo": "/logos/cloudflare.svg"
+    },
+    {
+      "name": "Claude",
+      "logo": "/logos/anthropic.svg"
+    },
+    {
+      "name": "ChatGPT",
+      "logo": "/logos/chatgpt.png"
+    },
+    {
+      "name": "Notion",
+      "logo": "/logos/notion.svg"
+    },
+    {
+      "name": "Figma",
+      "logo": "/logos/figma.svg"
+    },
+    {
+      "name": "GitHub",
+      "logo": "/logos/github.svg"
+    },
+    {
+      "name": "Vercel",
+      "logo": "/logos/vercel.svg"
+    },
+    {
+      "name": "Linear",
+      "logo": "/logos/linear.svg"
+    }
+  ]
+}
