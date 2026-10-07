@@ -9,9 +9,12 @@ let picIndex = 0;
     {site.hero.map((seg) =>
       "text" in seg ? (
         <>
-          {seg.text.split(" ").map((word) => (
-            <span class="hero-word">{word}</span>
-          ))}
+          {seg.text
+            .split(" ")
+            .filter(Boolean)
+            .map((word) => (
+              <span class="hero-word">{word}</span>
+            ))}
           {seg.break && <br />}
         </>
       ) : (
