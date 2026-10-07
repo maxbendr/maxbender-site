@@ -1,6 +1,7 @@
 import { getCollection } from "astro:content";
 
 import backgroundData from "../../content/background.json";
+import buildingData from "../../content/building.json";
 import orbitData from "../../content/orbit.json";
 import siteData from "../../content/site.json";
 import toolsData from "../../content/tools.json";
@@ -79,6 +80,13 @@ export interface OrbitContent {
   players: Player[];
 }
 
+export interface BuildingContent {
+  label: string;
+  title: string;
+  intro: string;
+  items: { title: string; text: string }[];
+}
+
 export interface ToolsContent {
   label: string;
   title: string;
@@ -91,6 +99,7 @@ export const background = backgroundData as BackgroundContent;
 export const travel = travelData as TravelContent;
 export const orbit = orbitData as OrbitContent;
 export const tools = toolsData as ToolsContent;
+export const building = buildingData as BuildingContent;
 
 /** Newest first, drafts dropped from the production build. */
 export async function getPosts() {
@@ -133,5 +142,6 @@ export const sections = [
   { id: "orbit", label: "Ecosystem" },
   { id: "tools", label: "Tools" },
   { id: "travel", label: "Travel" },
+  { id: "building", label: "Building" },
   { id: "background", label: "About" },
 ] as const;

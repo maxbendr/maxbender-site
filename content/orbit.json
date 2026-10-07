@@ -9,75 +9,75 @@
       "font": "fraunces",
       "lead": "Public agencies that want a startup ecosystem, not a press release.",
       "items": [
-        "Ecosystem assessments for public innovation agencies",
-        "Program design with ministries and development agencies",
-        "[PLACEHOLDER] one concrete outcome, no client names"
+        "National startup strategies and ecosystem roadmaps",
+        "Innovation policy consulting",
+        "Setting up innovation hubs and the startup programs that fill them"
       ]
     },
     {
       "id": "venture-capital",
       "label": "Venture capital",
       "font": "instrument",
-      "lead": "Funds I scout with, co-host with and send founders to.",
+      "lead": "Investors looking for dealflow outside the usual cities.",
       "items": [
-        "Deal flow sharing with regional and international funds",
-        "Investor days and pitch sessions inside programs",
-        "[PLACEHOLDER]"
+        "Founder calls and first screening",
+        "Due diligence support",
+        "Introductions that turn into investment conversations"
       ]
     },
     {
       "id": "corporates",
       "label": "Corporates",
       "font": "unbounded",
-      "lead": "Large companies that want to work with startups and need someone to make it real.",
+      "lead": "Large companies that want to work with startups and actually ship something.",
       "items": [
-        "Open innovation programs, from problem statement to pilot",
-        "Workshops with business units on how to buy from startups",
-        "[PLACEHOLDER]"
+        "Innovation strategy and roadmaps",
+        "Venture clienting: scouting the right startups and running pilots",
+        "Intrapreneurship programs, hackathons and AI trainings, managed end to end"
       ]
     },
     {
       "id": "startups",
       "label": "Startups",
       "font": "bricolage",
-      "lead": "Founders I scout, select and get in front of the right people.",
+      "lead": "Founders who need a sharper pitch and the right introduction.",
       "items": [
-        "Scouting and selection across Europe, MENA, West Africa and the Caucasus",
-        "Pilot scoping and corporate introductions",
-        "[PLACEHOLDER]"
+        "Mentoring, one to one and in cohorts",
+        "Pitch and product workshops",
+        "Introductions to corporates, investors and partners"
       ]
     },
     {
       "id": "accelerators",
       "label": "Accelerators",
       "font": "dmserif",
-      "lead": "Programs where I mentor, run sessions or help design the curriculum.",
+      "lead": "Programs that want their startups ready for corporates and investors.",
       "items": [
-        "Mentoring on corporate sales and go to market",
-        "Workshop design and delivery for cohorts",
-        "[PLACEHOLDER]"
+        "Mentoring and startup readiness",
+        "Workshops across the program",
+        "Follow-up connections into my network after the program ends"
       ]
     },
     {
       "id": "building",
       "label": "Building",
       "font": "syne",
-      "lead": "Things I make myself, mostly with AI tools and too little sleep.",
+      "lead": "I automate most of my own work and build small tools with AI.",
       "items": [
-        "Small web apps and internal tools, vibe coded end to end",
-        "This site, built with Astro and a lot of iteration",
-        "[PLACEHOLDER] a project worth showing"
+        "A personal operating dashboard that reads my calendar and tasks and briefs me twice a day",
+        "Lumen, a dashboard for my sleep, recovery and training data",
+        "Automations that run recurring work: interview write-ups, outreach lists, weekly reports"
       ]
     },
     {
       "id": "communities",
       "label": "Communities",
       "font": "spacegrotesk",
-      "lead": "Meetups, founder groups and the people who keep an ecosystem talking.",
+      "lead": "Ecosystems only work when people keep showing up.",
       "items": [
-        "Hosting and speaking at ecosystem events",
-        "Connecting founders, operators and investors across cities",
-        "[PLACEHOLDER]"
+        "Building founder and innovation communities from scratch",
+        "Hackathons and builders' workshops",
+        "Events that put founders, corporates, investors and government in one room"
       ]
     }
   ]

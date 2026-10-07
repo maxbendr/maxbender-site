@@ -28,27 +28,27 @@
       "text": "and bring people"
     },
     {
-      "image": "/images/mentoring.jpg",
-      "alt": "Max running a workshop with founders"
+      "image": "/images/founders.jpg",
+      "alt": "Max talking to founders in a workshop"
     },
     {
       "text": "together."
     }
   ],
-  "subline": "Open Innovation at Plug and Play. Based in Valencia, usually somewhere else.",
-  "description": "Max Bender builds startup ecosystems, advises founders and bridges the gap between startups and corporates across Europe, the Middle East, West Africa and the Caucasus, and builds things with AI.",
-  "email": "hello@maxbender.com",
+  "subline": "Open Innovation at Plug and Play. Based in Abu Dhabi, usually somewhere else.",
+  "description": "Max Bender builds startup ecosystems, advises founders and bridges the gap between startups and corporates across Europe, the Middle East, Africa and Asia, and builds things with AI.",
+  "email": "maxbender24@gmail.com",
   "headshot": "/images/max-portrait.jpg",
   "headshotAlt": "Max Bender speaking on stage",
   "ogImage": "/og.png",
   "links": {
-    "linkedin": "https://www.linkedin.com/in/[PLACEHOLDER]",
-    "github": "https://github.com/[PLACEHOLDER]",
+    "linkedin": "https://www.linkedin.com/in/maxbe/",
+    "github": "https://github.com/maxbendr",
     "substack": ""
   },
   "contact": {
     "note": "Open to talking about startups, innovation programs and AI builds.",
-    "formEndpoint": "https://formspree.io/f/[PLACEHOLDER]"
+    "formEndpoint": ""
   },
   "analytics": {
     "provider": "none",
