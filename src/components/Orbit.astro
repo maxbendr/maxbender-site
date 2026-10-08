@@ -2,12 +2,12 @@
 import { orbit } from "../lib/content";
 
 const n = orbit.players.length;
-/* Starting angle, radius ratio, drift speed and tilt per word; motion is layered on the client. */
+/* Starting angle, radius ratio and tilt per word; one shared speed keeps the words evenly spaced. */
 const words = orbit.players.map((p, i) => ({
   ...p,
   angle: (i / n) * 360 + 65,
-  radius: 0.9 + (i % 2) * 0.08,
-  speed: 0.9 + (i % 3) * 0.12,
+  radius: 0.86 + (i % 2) * 0.16,
+  speed: 1,
   tilt: ((i % 3) - 1) * 6,
 }));
 ---
