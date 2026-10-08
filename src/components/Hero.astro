@@ -5,34 +5,47 @@ let picIndex = 0;
 ---
 
 <header class="hero mx-auto max-w-6xl px-6 pt-40 pb-16 sm:pt-48 sm:pb-24" data-hero>
-  <h1 class="hero-title text-[clamp(2.4rem,7.5vw,6.2rem)] leading-[1.02] font-semibold tracking-tight">
-    {site.hero.map((seg) =>
-      "text" in seg ? (
-        <>
-          {seg.text
-            .split(" ")
-            .filter(Boolean)
-            .map((word) => (
-              <span class="hero-word">{word}</span>
-            ))}
-          {seg.break && <br />}
-        </>
-      ) : (
-        <span class="hero-pic" data-hero-pic data-depth={((picIndex++ % 3) + 1) * 5}>
-          <img
-            src={seg.image}
-            alt=""
-            width="320"
-            height="160"
-            loading="eager"
-            decoding="async"
-            fetchpriority="high"
-            aria-hidden="true"
-          />
-        </span>
-      ),
-    )}
-  </h1>
+  <div class="hero-stack" data-hero-stack>
+    {[false, true].map((reveal) => {
+      picIndex = 0;
+      return (
+        <h1
+          class:list={[
+            "hero-title text-[clamp(2.4rem,7.5vw,6.2rem)] leading-[1.02] font-semibold tracking-tight",
+            reveal && "hero-reveal",
+          ]}
+          aria-hidden={reveal ? "true" : undefined}
+        >
+          {site.hero.map((seg) =>
+            "text" in seg ? (
+              <>
+                {seg.text
+                  .split(" ")
+                  .filter(Boolean)
+                  .map((word) => (
+                    <span class="hero-word">{word}</span>
+                  ))}
+                {seg.break && <br />}
+              </>
+            ) : (
+              <span class="hero-pic" data-hero-pic data-depth={((picIndex++ % 3) + 1) * 5}>
+                <img
+                  src={seg.image}
+                  alt=""
+                  width="320"
+                  height="160"
+                  loading="eager"
+                  decoding="async"
+                  fetchpriority="high"
+                  aria-hidden="true"
+                />
+              </span>
+            ),
+          )}
+        </h1>
+      );
+    })}
+  </div>
   <p class="hero-sub mt-8 max-w-xl text-lg text-ink-soft dark:text-chalk-soft">
     {site.subline}
   </p>
@@ -47,6 +60,55 @@ let picIndex = 0;
 </header>
 
 <style>
+  @property --reveal-r {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0rem;
+  }
+
+  .hero-stack {
+    position: relative;
+    transition: --reveal-r 0.5s;
+    --mx: -200vw;
+    --my: -200vh;
+    --reveal-r: 0rem;
+  }
+
+  .hero-reveal {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    pointer-events: none;
+    color: var(--color-accent);
+    -webkit-mask-image: radial-gradient(
+      circle var(--reveal-r, 9rem) at var(--mx) var(--my),
+      #000 0%,
+      rgba(0, 0, 0, 0.9) 45%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      circle var(--reveal-r, 9rem) at var(--mx) var(--my),
+      #000 0%,
+      rgba(0, 0, 0, 0.9) 45%,
+      transparent 100%
+    );
+  }
+
+  :global(.dark) .hero-reveal {
+    color: var(--color-accent-dark);
+  }
+
+  .hero-reveal .hero-word,
+  .hero-reveal .hero-pic {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .hero-reveal .hero-pic img {
+    filter: saturate(1.4) contrast(1.05);
+  }
+
   .hero-word {
     display: inline-block;
     margin-right: 0.28em;
@@ -157,9 +219,48 @@ let picIndex = 0;
 
 <script>
   const hero = document.querySelector<HTMLElement>("[data-hero]");
+  const stack = document.querySelector<HTMLElement>("[data-hero-stack]");
   const pics = [...document.querySelectorAll<HTMLElement>("[data-hero-pic]")];
   const fine = window.matchMedia("(pointer: fine)");
   const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (hero && stack && !still.matches) {
+    let tx = 0;
+    let ty = 0;
+    let x = 0;
+    let y = 0;
+    let on = false;
+    let raf = 0;
+
+    const frame = () => {
+      x += (tx - x) * 0.18;
+      y += (ty - y) * 0.18;
+      stack.style.setProperty("--mx", `${x}px`);
+      stack.style.setProperty("--my", `${y}px`);
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.3 ? requestAnimationFrame(frame) : 0;
+    };
+
+    const aim = (e: PointerEvent) => {
+      const r = stack.getBoundingClientRect();
+      tx = e.clientX - r.left;
+      ty = e.clientY - r.top;
+      if (!on) {
+        on = true;
+        x = tx;
+        y = ty;
+        stack.style.setProperty("--reveal-r", "9rem");
+      }
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
+
+    hero.addEventListener("pointermove", aim, { passive: true });
+    hero.addEventListener("pointerdown", aim, { passive: true });
+    hero.addEventListener("pointerleave", (e) => {
+      if (e.pointerType !== "mouse") return;
+      on = false;
+      stack.style.setProperty("--reveal-r", "0rem");
+    });
+  }
 
   if (hero && pics.length && fine.matches) {
     hero.addEventListener(
