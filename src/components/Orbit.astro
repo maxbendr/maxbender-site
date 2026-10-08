@@ -1,5 +1,5 @@
 ---
-import { orbit, site } from "../lib/content";
+import { orbit } from "../lib/content";
 
 const n = orbit.players.length;
 /* Starting angle, radius ratio, drift speed and tilt per word; motion is layered on the client. */
@@ -7,7 +7,7 @@ const words = orbit.players.map((p, i) => ({
   ...p,
   angle: (i / n) * 360 + 65,
   radius: 0.9 + (i % 2) * 0.08,
-  speed: 0.55 + (i % 2) * 0.08,
+  speed: 0.9 + (i % 3) * 0.12,
   tilt: ((i % 3) - 1) * 6,
 }));
 ---
@@ -24,16 +24,7 @@ const words = orbit.players.map((p, i) => ({
   <div class="stage reveal" data-stage>
     <div class="halo" aria-hidden="true"></div>
     <div class="halo halo-b" aria-hidden="true"></div>
-    <img
-      class="me"
-      src={site.headshotCutout}
-      alt={site.name}
-      width="800"
-      height="800"
-      loading="lazy"
-      decoding="async"
-      draggable="false"
-    />
+    <div class="core" aria-hidden="true"></div>
     <ul class="words" role="list">
       {words.map((w) => (
         <li
@@ -109,16 +100,21 @@ const words = orbit.players.map((p, i) => ({
     animation-delay: -4s;
   }
 
-  .me {
+  .core {
     position: absolute;
     left: 50%;
-    bottom: 10%;
-    width: 42%;
-    height: auto;
-    translate: -50% 0;
-    filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.18));
-    user-select: none;
-    animation: float 7s ease-in-out infinite;
+    top: 50%;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    translate: -50% -50%;
+    box-shadow: 0 0 0 0.6rem rgba(var(--accent-rgb), 0.12);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  :global(.dark) .core {
+    background: var(--color-accent-dark);
   }
 
   .words {
@@ -138,7 +134,9 @@ const words = orbit.players.map((p, i) => ({
         calc(cos(var(--angle)) * var(--r) * var(--rx) * var(--size) / 2),
         calc(sin(var(--angle)) * var(--r) * var(--size) / 2 * 0.7)
       )
-      rotate(var(--tilt));
+      rotate(var(--tilt)) scale(var(--depth, 1));
+    opacity: calc(0.55 + var(--depth, 1) * 0.45);
+    filter: blur(calc((1 - var(--depth, 1)) * 2px));
     transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     white-space: nowrap;
   }
@@ -224,11 +222,16 @@ const words = orbit.players.map((p, i) => ({
   }
 
   .player {
+    position: fixed;
+    inset: 0;
+    margin: auto;
     border: 0;
     padding: 0;
     background: transparent;
     max-width: min(92vw, 34rem);
     width: 100%;
+    max-height: 90vh;
+    height: fit-content;
     color: inherit;
   }
 
@@ -255,16 +258,16 @@ const words = orbit.players.map((p, i) => ({
     }
   }
 
-  @keyframes float {
+  @keyframes pulse {
     50% {
-      translate: -50% -2%;
+      box-shadow: 0 0 0 1.4rem rgba(var(--accent-rgb), 0.04);
     }
   }
 
   @keyframes player-in {
     from {
       opacity: 0;
-      transform: translateY(20px) scale(0.98);
+      transform: translateY(24px) scale(0.94);
     }
   }
 </style>
@@ -306,12 +309,14 @@ const words = orbit.players.map((p, i) => ({
       const dt = Math.min((now - last) / 1000, 0.1);
       last = now;
       for (const w of state) {
-        w.angle += dt * w.speed * (slow ? 1.5 : 6);
+        w.angle += dt * w.speed * (slow ? 4 : 14);
         const breathe = Math.sin(now / 1800 + w.phase) * 0.04;
         const bob = Math.sin(now / 1300 + w.phase) * 3;
         w.el.style.setProperty("--angle", `${w.angle}deg`);
         w.el.style.setProperty("--r", `${w.radius + breathe}`);
         w.el.style.setProperty("--tilt", `${w.tilt + bob}deg`);
+        const depth = 0.82 + ((Math.sin((w.angle * Math.PI) / 180) + 1) / 2) * 0.28;
+        w.el.style.setProperty("--depth", depth.toFixed(3));
       }
       raf = requestAnimationFrame(tick);
     };
