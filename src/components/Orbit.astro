@@ -80,9 +80,10 @@ const words = orbit.players.map((p, i) => ({
   .stage {
     --size: min(92vw, 46rem);
     --rx: 1;
+    --ry: 0.82;
     position: relative;
     width: var(--size);
-    height: var(--size);
+    height: calc(var(--size) * var(--sy, 1));
     margin: 3rem auto 0;
   }
 
@@ -132,7 +133,7 @@ const words = orbit.players.map((p, i) => ({
     transform: translate(-50%, -50%)
       translate(
         calc(cos(var(--angle)) * var(--r) * var(--rx) * var(--size) / 2),
-        calc(sin(var(--angle)) * var(--r) * var(--size) / 2 * 0.82)
+        calc(sin(var(--angle)) * var(--r) * var(--ry) * var(--size) / 2)
       )
       rotate(var(--tilt)) scale(var(--depth, 1));
     opacity: calc(0.55 + var(--depth, 1) * 0.45);
@@ -147,7 +148,9 @@ const words = orbit.players.map((p, i) => ({
 
   @media (max-width: 640px) {
     .stage {
-      --rx: 0.72;
+      --rx: 0.6;
+      --ry: 1.25;
+      --sy: 1.45;
     }
   }
 
