@@ -6,7 +6,7 @@ const n = orbit.players.length;
 const words = orbit.players.map((p, i) => ({
   ...p,
   angle: (i / n) * 360 + 65,
-  radius: 0.8 + (i % 2) * 0.24,
+  radius: 0.7 + (i % 2) * 0.3,
   speed: 1,
   tilt: ((i % 3) - 1) * 6,
 }));
@@ -78,7 +78,7 @@ const words = orbit.players.map((p, i) => ({
 
 <style>
   .stage {
-    --size: min(88vw, 40rem);
+    --size: min(92vw, 46rem);
     --rx: 1;
     position: relative;
     width: var(--size);
@@ -132,7 +132,7 @@ const words = orbit.players.map((p, i) => ({
     transform: translate(-50%, -50%)
       translate(
         calc(cos(var(--angle)) * var(--r) * var(--rx) * var(--size) / 2),
-        calc(sin(var(--angle)) * var(--r) * var(--size) / 2 * 0.7)
+        calc(sin(var(--angle)) * var(--r) * var(--size) / 2 * 0.82)
       )
       rotate(var(--tilt)) scale(var(--depth, 1));
     opacity: calc(0.55 + var(--depth, 1) * 0.45);
@@ -156,7 +156,7 @@ const words = orbit.players.map((p, i) => ({
     border: 0;
     padding: 0.3em 0.4em;
     color: inherit;
-    font-size: clamp(1.15rem, 4.5vw, 2.6rem);
+    font-size: clamp(1.05rem, 4vw, 2.3rem);
     line-height: 1;
     transition:
       color 0.3s,
@@ -192,7 +192,7 @@ const words = orbit.players.map((p, i) => ({
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: -0.02em;
-    font-size: clamp(1rem, 3.2vw, 1.9rem);
+    font-size: clamp(0.9rem, 2.8vw, 1.65rem);
   }
 
   .font-bricolage {
@@ -211,7 +211,7 @@ const words = orbit.players.map((p, i) => ({
     font-weight: 800;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    font-size: clamp(1.1rem, 3.6vw, 2.1rem);
+    font-size: clamp(1rem, 3.2vw, 1.85rem);
   }
 
   .font-spacegrotesk {
