@@ -6,7 +6,7 @@ const n = orbit.players.length;
 const words = orbit.players.map((p, i) => ({
   ...p,
   angle: (i / n) * 360 + 65,
-  radius: 0.86 + (i % 2) * 0.16,
+  radius: 0.8 + (i % 2) * 0.24,
   speed: 1,
   tilt: ((i % 3) - 1) * 6,
 }));
@@ -217,7 +217,7 @@ const words = orbit.players.map((p, i) => ({
   .font-spacegrotesk {
     font-family: "Space Grotesk Variable", sans-serif;
     font-weight: 300;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.04em;
     text-transform: lowercase;
   }
 

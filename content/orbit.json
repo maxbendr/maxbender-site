@@ -26,17 +26,6 @@
       ]
     },
     {
-      "id": "corporates",
-      "label": "Corporates",
-      "font": "unbounded",
-      "lead": "Large companies that want to work with startups and actually ship something.",
-      "items": [
-        "Innovation strategy and roadmaps",
-        "Venture clienting: scouting the right startups and running pilots",
-        "Intrapreneurship programs, hackathons and AI trainings, managed end to end"
-      ]
-    },
-    {
       "id": "startups",
       "label": "Startups",
       "font": "bricolage",
@@ -45,17 +34,6 @@
         "Mentoring, one to one and in cohorts",
         "Pitch and product workshops",
         "Introductions to corporates, investors and partners"
-      ]
-    },
-    {
-      "id": "accelerators",
-      "label": "Accelerators",
-      "font": "dmserif",
-      "lead": "Programs that want their startups ready for corporates and investors.",
-      "items": [
-        "Mentoring and startup readiness",
-        "Workshops across the program",
-        "Follow-up connections into my network after the program ends"
       ]
     },
     {
@@ -70,6 +48,17 @@
       ]
     },
     {
+      "id": "corporates",
+      "label": "Corporates",
+      "font": "unbounded",
+      "lead": "Large companies that want to work with startups and actually ship something.",
+      "items": [
+        "Innovation strategy and roadmaps",
+        "Venture clienting: scouting the right startups and running pilots",
+        "Intrapreneurship programs, hackathons and AI trainings, managed end to end"
+      ]
+    },
+    {
       "id": "communities",
       "label": "Communities",
       "font": "spacegrotesk",
@@ -78,6 +67,17 @@
         "Building founder and innovation communities from scratch",
         "Hackathons and builders' workshops",
         "Events that put founders, corporates, investors and government in one room"
+      ]
+    },
+    {
+      "id": "accelerators",
+      "label": "Accelerators",
+      "font": "dmserif",
+      "lead": "Programs that want their startups ready for corporates and investors.",
+      "items": [
+        "Mentoring and startup readiness",
+        "Workshops across the program",
+        "Follow-up connections into my network after the program ends"
       ]
     }
   ]
