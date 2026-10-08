@@ -8,14 +8,21 @@
     },
     {
       "image": "/images/hero-stage.jpg",
-      "alt": "Max speaking on stage"
+      "alt": "Max speaking on stage in Lisbon"
     },
     {
       "text": "",
       "break": true
     },
     {
-      "text": "I build ecosystems, build with AI and bring people together."
+      "text": "I build ecosystems, build with AI"
+    },
+    {
+      "image": "/images/hero-cap.jpg",
+      "alt": "Max on a rooftop at dusk"
+    },
+    {
+      "text": "and bring people together."
     }
   ],
   "subline": "Open Innovation at Plug and Play. Based in Abu Dhabi, usually somewhere else.",
